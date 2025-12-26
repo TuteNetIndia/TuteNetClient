@@ -1,0 +1,47 @@
+{
+  "name": "@tutenet/upload-client",
+  "version": "1.0.0",
+  "description": "TuteNet Upload Service Client - TypeScript client for resource upload operations",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/**/*",
+    "README.md"
+  ],
+  "scripts": {
+    "prebuild": "npm run clean",
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "dev": "tsc --watch",
+    "test": "jest",
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix"
+  },
+  "keywords": [
+    "tutenet",
+    "upload",
+    "client",
+    "typescript",
+    "api"
+  ],
+  "author": "TuteNet Team",
+  "license": "MIT",
+  "dependencies": {
+    "@tutenet/client-core": "file:../core"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  },
+  "peerDependencies": {
+    "axios": "^1.6.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tutenet/client.git",
+    "directory": "packages/upload-client"
+  },
+  "publishConfig": {
+    "access": "restricted"
+  }
+}

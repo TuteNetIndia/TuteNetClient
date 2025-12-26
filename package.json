@@ -1,0 +1,51 @@
+{
+  "name": "@tutenet/client",
+  "version": "1.0.0",
+  "description": "TuteNet Service Clients - TypeScript clients for all TuteNet backend services",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces",
+    "clean": "npm run clean --workspaces",
+    "test": "npm run test --workspaces",
+    "lint": "npm run lint --workspaces",
+    "lint:fix": "npm run lint:fix --workspaces",
+    "dev": "npm run dev --workspaces",
+    "build:core": "npm run build -w @tutenet/client-core",
+    "build:profile": "npm run build -w @tutenet/profile-client",
+    "build:auth": "npm run build -w @tutenet/auth-client",
+    "build:upload": "npm run build -w @tutenet/upload-client"
+  },
+  "keywords": [
+    "tutenet",
+    "client",
+    "typescript",
+    "api",
+    "sdk"
+  ],
+  "author": "TuteNet Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "eslint": "^8.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "jest": "^29.0.0",
+    "@types/jest": "^29.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tutenet/client.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tutenet/client/issues"
+  },
+  "homepage": "https://github.com/tutenet/client#readme"
+}
