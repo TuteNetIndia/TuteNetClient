@@ -23,7 +23,7 @@ import {
   ChangePasswordRequest,
   DeleteAccountRequest,
   AuthResponse,
-  GetCurrentUserResponse,
+  User,
   SuccessResponse,
 } from '../types/api';
 
@@ -86,8 +86,8 @@ export class AuthClient extends BaseClient {
   /**
    * Get current user information
    */
-  async getCurrentUser(): Promise<GetCurrentUserResponse> {
-    return this.get<GetCurrentUserResponse>('/auth/me');
+  async getCurrentUser(): Promise<User> {
+    return this.get<User>('/auth/me');
   }
 
   /**

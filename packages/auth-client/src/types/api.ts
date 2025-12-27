@@ -78,9 +78,9 @@ export interface DeleteAccountRequest {
 }
 
 /**
- * User response model
+ * User model (matches auth service User exactly)
  */
-export interface UserResponse {
+export interface User {
   userId: string;
   email: string;
   firstName: string;
@@ -105,7 +105,7 @@ export interface AuthTokens {
  * Authentication response with user and tokens
  */
 export interface AuthResponse {
-  user: UserResponse;
+  user: User;
   tokens: AuthTokens;
 }
 
@@ -118,8 +118,6 @@ export interface SuccessResponse {
 }
 
 /**
- * Get current user response
+ * Get current user response (returns User directly)
  */
-export interface GetCurrentUserResponse {
-  user: UserResponse;
-}
+export type GetCurrentUserResponse = User;

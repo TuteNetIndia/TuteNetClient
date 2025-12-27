@@ -55,7 +55,7 @@ export const ENDPOINTS = {
     [ApiType.INTERNAL]: 'https://dev-internal-api.tutenet.com',
   },
   [Environment.STAGING]: {
-    [ApiType.EXTERNAL]: 'https://staging-api.tutenet.com/v1',
+    [ApiType.EXTERNAL]: 'https://e5bbza977a.execute-api.ap-south-1.amazonaws.com/staging/v1',
     [ApiType.INTERNAL]: 'https://staging-internal-api.tutenet.com',
   },
   [Environment.PRODUCTION]: {
