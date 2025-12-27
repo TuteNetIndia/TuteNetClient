@@ -1,8 +1,10 @@
 /**
- * Upload Service Client
+ * TuteNet Upload Service Client
  * 
- * Provides methods to interact with the TuteNet Upload Service API.
- * Supports both internal and external API endpoints with automatic environment detection.
+ * TypeScript client for the TuteNet Upload Service API with comprehensive
+ * upload workflow management, resource CRUD operations, and search capabilities.
+ * 
+ * @version 2.0.0
  */
 
 import { 
@@ -30,31 +32,20 @@ import {
   SuccessResponse,
 } from '../types/api';
 
-/**
- * Upload client configuration
- */
+/** Upload client configuration options */
 export interface UploadClientConfig {
-  /** Environment to use (auto-detected if not provided) */
   environment?: Environment;
-  
-  /** Use internal API endpoints */
   useInternalApi?: boolean;
-  
-  /** Custom base URL (overrides environment detection) */
   baseUrl?: string;
-  
-  /** Request timeout in milliseconds */
   timeout?: number;
-  
-  /** Number of retry attempts */
   retries?: number;
-  
-  /** Authentication token for protected endpoints */
   accessToken?: string;
 }
 
 /**
- * Upload Service Client
+ * TuteNet Upload Service Client
+ * 
+ * Main client class for interacting with the Upload Service API.
  */
 export class UploadClient extends BaseClient {
   constructor(config: UploadClientConfig = {}) {
@@ -72,51 +63,37 @@ export class UploadClient extends BaseClient {
     super(clientConfig);
   }
 
-  /**
-   * Generate presigned URL for file upload
-   */
+  /** Generate presigned URL for file upload */
   async generatePresignedUrl(request: PresignedUrlRequest): Promise<PresignedUrlResponse> {
     return this.post<PresignedUrlResponse>('/upload/presign', request);
   }
 
-  /**
-   * Finalize upload and create resource
-   */
+  /** Finalize upload and create resource */
   async finalizeUpload(request: CreateResourceRequest): Promise<CreateResourceResponse> {
     return this.post<CreateResourceResponse>('/resources', request);
   }
 
-  /**
-   * Bulk finalize uploads and create multiple resources
-   */
+  /** Bulk finalize uploads and create multiple resources */
   async bulkFinalizeUpload(request: BulkCreateResourceRequest): Promise<BulkCreateResourceResponse> {
     return this.post<BulkCreateResourceResponse>('/resources/bulk', request);
   }
 
-  /**
-   * Get resource by ID
-   */
+  /** Get resource by ID */
   async getResource(resourceId: string): Promise<ResourceResponse> {
     return this.get<ResourceResponse>(`/resources/${resourceId}`);
   }
 
-  /**
-   * Update resource
-   */
+  /** Update resource metadata */
   async updateResource(resourceId: string, request: UpdateResourceRequest): Promise<ResourceResponse> {
     return this.patch<ResourceResponse>(`/resources/${resourceId}`, request);
   }
 
-  /**
-   * Delete resource
-   */
+  /** Delete resource */
   async deleteResource(resourceId: string): Promise<DeleteResourceResponse> {
     return this.delete<DeleteResourceResponse>(`/resources/${resourceId}`);
   }
 
-  /**
-   * List resources with filtering and pagination
-   */
+  /** List resources with filtering and pagination */
   async listResources(params?: ListResourcesParams): Promise<ListResourcesResponse> {
     const queryParams = new URLSearchParams();
     
@@ -136,9 +113,7 @@ export class UploadClient extends BaseClient {
     return this.get<ListResourcesResponse>(url);
   }
 
-  /**
-   * Search resources
-   */
+  /** Search resources with full-text search */
   async searchResources(params: SearchResourcesParams): Promise<SearchResourcesResponse> {
     const queryParams = new URLSearchParams();
     
@@ -155,56 +130,37 @@ export class UploadClient extends BaseClient {
     return this.get<SearchResourcesResponse>(`/search?${queryParams.toString()}`);
   }
 
-  /**
-   * Get course structure (course with chapters and materials)
-   */
+  /** Get course structure with chapters and materials */
   async getCourseStructure(courseId: string): Promise<CourseStructureResponse> {
     return this.get<CourseStructureResponse>(`/courses/${courseId}/structure`);
   }
 
-  /**
-   * Validate S3 upload (internal use)
-   */
+  /** Validate S3 upload (internal use) */
   async validateS3Upload(s3Key: string): Promise<SuccessResponse> {
     return this.post<SuccessResponse>('/upload/validate', { s3Key });
   }
 
-  /**
-   * Process video (trigger video processing)
-   */
+  /** Process video (trigger video processing) */
   async processVideo(resourceId: string): Promise<SuccessResponse> {
     return this.post<SuccessResponse>(`/resources/${resourceId}/process-video`);
   }
 
-  /**
-   * Cleanup orphaned files (admin operation)
-   */
+  /** Cleanup orphaned files (admin operation) */
   async cleanupOrphanedFiles(): Promise<SuccessResponse> {
     return this.post<SuccessResponse>('/admin/cleanup-orphaned-files');
   }
 
-  /**
-   * Set authentication token for subsequent requests
-   */
+  /** Set authentication token for subsequent requests */
   setAccessToken(token: string): void {
-    // Update the config and recreate client with new token
     (this.config as any).authToken = token;
   }
 
-  /**
-   * Clear authentication token
-   */
+  /** Clear authentication token */
   clearAccessToken(): void {
-    // Clear the token from config
     delete (this.config as any).authToken;
   }
 
-  /**
-   * Upload file directly to S3 using presigned URL
-   * 
-   * This is a convenience method that combines presigned URL generation
-   * and direct upload to S3.
-   */
+  /** Upload file directly to S3 using presigned URL */
   async uploadFile(
     file: File | Buffer,
     filename: string,
@@ -242,11 +198,7 @@ export class UploadClient extends BaseClient {
     }
   }
 
-  /**
-   * Complete upload workflow: generate presigned URL, upload to S3, and finalize
-   * 
-   * This is a convenience method for the full upload workflow.
-   */
+  /** Complete upload workflow: generate presigned URL, upload to S3, and finalize */
   async completeUpload(
     file: File | Buffer,
     filename: string,
