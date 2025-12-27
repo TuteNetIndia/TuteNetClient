@@ -168,6 +168,10 @@ export abstract class BaseClient implements HttpClient {
       url,
       data,
       ...config,
+      // Properly merge headers from config with existing headers
+      headers: {
+        ...config?.headers,
+      },
     };
 
     // Add request metadata
@@ -178,6 +182,11 @@ export abstract class BaseClient implements HttpClient {
         'X-Correlation-ID': config.metadata.correlationId,
         'X-Client-Version': config.metadata.clientVersion,
       };
+    }
+
+    // Log request in debug mode only
+    if (this.config.debug) {
+      console.debug(`[${this.constructor.name}] ${method} ${url}`);
     }
 
     const operation = () => this.executeRequest<T>(requestConfig);
@@ -251,6 +260,16 @@ export abstract class BaseClient implements HttpClient {
   private handleError(error: any, url: string): ClientError {
     const axiosError = error as AxiosError;
 
+    // Log errors in debug mode only
+    if (this.config.debug) {
+      console.error(`[${this.constructor.name}] Request failed:`, {
+        url: url,
+        status: axiosError.response?.status,
+        errorCode: axiosError.code,
+        errorMessage: axiosError.message,
+      });
+    }
+
     // Network errors
     if (axiosError.code === 'ECONNREFUSED' || axiosError.code === 'ENOTFOUND') {
       return new NetworkError(
@@ -286,7 +305,7 @@ export abstract class BaseClient implements HttpClient {
     this.client.interceptors.request.use(
       (config) => {
         if (this.config.debug) {
-          console.log(`[${this.constructor.name}] ${config.method?.toUpperCase()} ${config.url}`);
+          console.debug(`[${this.constructor.name}] → ${config.method?.toUpperCase()} ${config.url}`);
         }
 
         // Add authentication token if available
@@ -298,7 +317,7 @@ export abstract class BaseClient implements HttpClient {
       },
       (error) => {
         if (this.config.debug) {
-          console.error(`[${this.constructor.name}] Request error:`, error.message);
+          console.error(`[${this.constructor.name}] Request interceptor error:`, error.message);
         }
         return Promise.reject(error);
       }
@@ -308,7 +327,7 @@ export abstract class BaseClient implements HttpClient {
     this.client.interceptors.response.use(
       (response) => {
         if (this.config.debug) {
-          console.log(`[${this.constructor.name}] ${response.status} ${response.config.url}`);
+          console.debug(`[${this.constructor.name}] ← ${response.status} ${response.config.url}`);
         }
         return response;
       },

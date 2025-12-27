@@ -47,7 +47,7 @@ export interface ClientConfig {
 
 /**
  * Environment-specific API endpoints
- * No need to pass these as environment variables - they're built into the client
+ * Updated with actual deployed AWS API Gateway endpoints
  */
 export const ENDPOINTS = {
   [Environment.DEVELOPMENT]: {
@@ -55,8 +55,9 @@ export const ENDPOINTS = {
     [ApiType.INTERNAL]: 'https://dev-internal-api.tutenet.com',
   },
   [Environment.STAGING]: {
-    [ApiType.EXTERNAL]: 'https://e5bbza977a.execute-api.ap-south-1.amazonaws.com/staging/v1',
-    [ApiType.INTERNAL]: 'https://staging-internal-api.tutenet.com',
+    // Actual deployed API Gateway endpoints for staging
+    [ApiType.EXTERNAL]: 'https://w279ximlc7.execute-api.ap-south-1.amazonaws.com/staging/v1',
+    [ApiType.INTERNAL]: 'https://nenm54vjg3.execute-api.ap-south-1.amazonaws.com/staging',
   },
   [Environment.PRODUCTION]: {
     [ApiType.EXTERNAL]: 'https://api.tutenet.com/v1',

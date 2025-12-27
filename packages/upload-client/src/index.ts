@@ -28,7 +28,7 @@
  *   tags: ['algebra'],
  *   language: 'English',
  *   visibility: 'public',
- *   teacherId: 'teacher-123',
+ *   userId: 'teacher-123',
  *   s3Key: presigned.key
  * });
  * ```

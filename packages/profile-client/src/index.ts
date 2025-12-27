@@ -28,10 +28,12 @@ export type {
   ValidateStatisticsResponse
 } from './types/api';
 
-// Re-export core types that are commonly used
-export type { 
+// Re-export core types and enums that are commonly used
+export { 
   Environment, 
-  ApiType, 
+  ApiType 
+} from '@tutenet/client-core';
+export type { 
   ClientConfig,
   ClientError 
 } from '@tutenet/client-core';

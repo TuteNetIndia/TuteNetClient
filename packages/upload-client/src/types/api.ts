@@ -69,7 +69,7 @@ export interface CreateResourceRequest {
   materialType?: MaterialType;
   
   // Teacher info
-  teacherId: string;
+  userId: string;
   
   // Optional metadata
   topic?: string;
@@ -121,7 +121,7 @@ export interface ResourceResponse {
   materialType?: MaterialType;
   
   // Teacher info
-  teacherId: string;
+  userId: string;
   teacherName: string;
   teacherSchool: string;
   
@@ -232,7 +232,7 @@ export interface CourseStructureResponse {
 export interface ListResourcesParams {
   // Filtering
   type?: ResourceType;
-  teacherId?: string;
+  userId?: string;
   subject?: string;
   grade?: string;
   language?: string;

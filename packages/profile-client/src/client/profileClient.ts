@@ -44,16 +44,35 @@ export class ProfileClient extends BaseClient {
     config?: RequestConfig
   ): Promise<GetProfileResponse> {
     try {
+      const clientConfig = this.getConfig();
+      
+      if (clientConfig.debug) {
+        console.debug(`[ProfileClient] Getting profile for user: ${userId}`);
+      }
+
       const params = new URLSearchParams();
       if (options?.includeStatistics) params.append('includeStatistics', 'true');
       if (options?.refreshStatistics) params.append('refreshStatistics', 'true');
       if (options?.statisticsMaxAge) params.append('statisticsMaxAge', options.statisticsMaxAge.toString());
 
       const url = this.buildUrl(`/profile/${userId}`, params);
+      
       const response = await this.get<GetProfileResponse>(url, config);
+      
+      if (clientConfig.debug) {
+        console.debug(`[ProfileClient] Profile retrieved successfully for user: ${userId}`);
+      }
       
       return response;
     } catch (error) {
+      const clientConfig = this.getConfig();
+      if (clientConfig.debug) {
+        console.error(`[ProfileClient] Failed to get profile for user ${userId}:`, {
+          error: error instanceof Error ? error.message : String(error),
+          errorCode: (error as any)?.code,
+          statusCode: (error as any)?.statusCode,
+        });
+      }
       throw this.handleProfileError(error, 'getProfile');
     }
   }
@@ -150,7 +169,7 @@ export class ProfileClient extends BaseClient {
       if (options?.refreshStatistics) params.append('refreshStatistics', 'true');
       if (options?.statisticsMaxAge) params.append('statisticsMaxAge', options.statisticsMaxAge.toString());
 
-      const url = this.buildUrl('/profiles', params);
+      const url = this.buildUrl('/profile', params);
       const responses = await this.get<GetProfileResponse[]>(url, config);
       
       return responses;
@@ -186,7 +205,7 @@ export class ProfileClient extends BaseClient {
       if (query.limit) params.append('limit', query.limit.toString());
       if (query.cursor) params.append('cursor', query.cursor);
 
-      const url = this.buildUrl('/profiles/search', params);
+      const url = this.buildUrl('/profile/search', params);
       const response = await this.get<{
         items: GetProfileResponse[];
         nextCursor?: string;
@@ -210,7 +229,14 @@ export class ProfileClient extends BaseClient {
     const clientConfig = this.getConfig();
     const baseUrl = clientConfig.apiType === 'internal' ? '/internal' : '';
     const fullPath = `${baseUrl}${path}`;
-    return params && params.toString() ? `${fullPath}?${params.toString()}` : fullPath;
+    const finalUrl = params && params.toString() ? `${fullPath}?${params.toString()}` : fullPath;
+    
+    // Only log URL construction in debug mode
+    if (clientConfig.debug) {
+      console.debug(`[ProfileClient] Built URL: ${finalUrl}`);
+    }
+    
+    return finalUrl;
   }
 
   /**
