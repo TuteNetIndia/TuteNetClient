@@ -7,6 +7,20 @@
  * @version 2.0.0
  */
 
+import {
+  PaginatedResponse,
+  SuccessResponse,
+  MessageResponse,
+  ErrorResponse
+} from '@tutenet/client-core';
+
+// Re-export common types for convenience
+export { PaginatedResponse, SuccessResponse, MessageResponse, ErrorResponse };
+
+// =============================================================================
+// ENUMS AND TYPES
+// =============================================================================
+
 /** Resource types: standalone, course, chapter, material */
 export type ResourceType = 'standalone' | 'course' | 'chapter' | 'material';
 
@@ -19,18 +33,15 @@ export type ResourceStatus = 'draft' | 'pending_review' | 'published' | 'rejecte
 /** Material types: lecture, worksheet, assignment, quiz, reference, other */
 export type MaterialType = 'lecture' | 'worksheet' | 'assignment' | 'quiz' | 'reference' | 'other';
 
+// =============================================================================
+// REQUEST TYPES
+// =============================================================================
+
 /** Generate presigned URL request */
 export interface PresignedUrlRequest {
   filename: string;
   contentType: string;
   idempotencyKey?: string;
-}
-
-/** Generate presigned URL response */
-export interface PresignedUrlResponse {
-  key: string;
-  url: string;
-  expiresIn: number;
 }
 
 /** Create resource request */
@@ -60,6 +71,62 @@ export interface CreateResourceRequest {
 export interface BulkCreateResourceRequest {
   resources: CreateResourceRequest[];
   idempotencyKey?: string;
+}
+
+/** Update resource request */
+export interface UpdateResourceRequest {
+  title?: string;
+  description?: string;
+  subject?: string;
+  grades?: string[];
+  tags?: string[];
+  language?: string;
+  visibility?: ResourceVisibility;
+  materialType?: MaterialType;
+  topic?: string;
+  license?: string;
+  sourceType?: string;
+  licenseDetails?: string;
+  status?: ResourceStatus;
+  orderIndex?: number;
+}
+
+/** List resources query parameters */
+export interface ListResourcesParams {
+  type?: ResourceType;
+  userId?: string;
+  subject?: string;
+  grades?: string;
+  language?: string;
+  status?: ResourceStatus;
+  visibility?: ResourceVisibility;
+  cursor?: string;
+  limit?: number;
+}
+
+/** Search resources query parameters */
+export interface SearchResourcesParams {
+  q: string;
+  type?: ResourceType;
+  subject?: string;
+  grade?: string;
+  language?: string;
+  materialType?: MaterialType;
+  cursor?: string;
+  limit?: number;
+  sortBy?: 'relevance' | 'createdAt' | 'downloads' | 'rating';
+  sortOrder?: 'asc' | 'desc';
+}
+
+// =============================================================================
+// RESPONSE DATA TYPES (for the 'data' field)
+// =============================================================================
+
+/** Generate presigned URL response */
+export interface PresignedUrlResponse {
+  key: string;
+  url: string;
+  expiresIn: number;
 }
 
 /** Resource response model (API-safe, excludes internal backend fields) */
@@ -122,24 +189,6 @@ export interface BulkCreateResourceResponse {
   }>;
 }
 
-/** Update resource request */
-export interface UpdateResourceRequest {
-  title?: string;
-  description?: string;
-  subject?: string;
-  grades?: string[];
-  tags?: string[];
-  language?: string;
-  visibility?: ResourceVisibility;
-  materialType?: MaterialType;
-  topic?: string;
-  license?: string;
-  sourceType?: string;
-  licenseDetails?: string;
-  status?: ResourceStatus;
-  orderIndex?: number;
-}
-
 /** Course structure response */
 export interface CourseStructureResponse {
   course: ResourceResponse;
@@ -149,39 +198,12 @@ export interface CourseStructureResponse {
   }>;
 }
 
-/** List resources query parameters */
-export interface ListResourcesParams {
-  type?: ResourceType;
-  userId?: string;
-  subject?: string;
-  grades?: string;
-  language?: string;
-  status?: ResourceStatus;
-  visibility?: ResourceVisibility;
-  cursor?: string;
-  limit?: number;
-}
-
 /** List resources response */
 export interface ListResourcesResponse {
   items: ResourceResponse[];
   nextCursor?: string;
   hasMore: boolean;
   totalCount?: number;
-}
-
-/** Search resources query parameters */
-export interface SearchResourcesParams {
-  q: string;
-  type?: ResourceType;
-  subject?: string;
-  grade?: string;
-  language?: string;
-  materialType?: MaterialType;
-  cursor?: string;
-  limit?: number;
-  sortBy?: 'relevance' | 'createdAt' | 'downloads' | 'rating';
-  sortOrder?: 'asc' | 'desc';
 }
 
 /** Search resources response */
@@ -193,14 +215,51 @@ export interface SearchResourcesResponse {
   searchTime: number;
 }
 
-/** Delete resource response */
+/** Delete resource response (data only) */
 export interface DeleteResourceResponse {
-  success: boolean;
   message: string;
 }
 
-/** Success response for operations without specific data */
-export interface SuccessResponse {
-  success: boolean;
-  message: string;
-}
+// =============================================================================
+// FULL API RESPONSE TYPES (using common response structure)
+// =============================================================================
+
+/** Generate presigned URL API response */
+export type PresignedUrlApiResponse = SuccessResponse<PresignedUrlResponse> | ErrorResponse;
+
+/** Create resource API response */
+export type CreateResourceApiResponse = SuccessResponse<CreateResourceResponse> | ErrorResponse;
+
+/** Bulk create resource API response */
+export type BulkCreateResourceApiResponse = SuccessResponse<BulkCreateResourceResponse> | ErrorResponse;
+
+/** Get resource API response */
+export type ResourceApiResponse = SuccessResponse<ResourceResponse> | ErrorResponse;
+
+/** Update resource API response */
+export type UpdateResourceApiResponse = SuccessResponse<ResourceResponse> | ErrorResponse;
+
+/** List resources API response */
+export type ListResourcesApiResponse = PaginatedResponse<ResourceResponse> | ErrorResponse;
+
+/** Search resources API response */
+export type SearchResourcesApiResponse = (PaginatedResponse<ResourceResponse> & {
+  data: {
+    items: ResourceResponse[];
+    nextCursor?: string;
+    previousCursor?: string;
+    hasNext: boolean;
+    hasPrevious: boolean;
+    totalCount?: number;
+    searchTime: number; // Additional field for search responses
+  };
+}) | ErrorResponse;
+
+/** Delete resource API response */
+export type DeleteResourceApiResponse = SuccessResponse<DeleteResourceResponse> | ErrorResponse;
+
+/** Course structure API response */
+export type CourseStructureApiResponse = SuccessResponse<CourseStructureResponse> | ErrorResponse;
+
+/** Success operation API response */
+export type SuccessApiResponse = SuccessResponse<MessageResponse> | ErrorResponse;

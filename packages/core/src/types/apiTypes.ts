@@ -182,3 +182,11 @@ export interface BatchResponse<T = any> {
     timestamp: string;
   };
 }
+
+/**
+ * Simple success response with message (for operations without data)
+ * Used for backward compatibility with data-only response patterns
+ */
+export interface MessageResponse {
+  message: string;
+}

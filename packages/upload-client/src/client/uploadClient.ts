@@ -16,21 +16,21 @@ import {
 } from '@tutenet/client-core';
 import {
   PresignedUrlRequest,
-  PresignedUrlResponse,
+  PresignedUrlApiResponse,
   CreateResourceRequest,
-  CreateResourceResponse,
+  CreateResourceApiResponse,
   BulkCreateResourceRequest,
-  BulkCreateResourceResponse,
+  BulkCreateResourceApiResponse,
   UpdateResourceRequest,
-  ResourceResponse,
-  CourseStructureResponse,
+  ResourceApiResponse,
+  CourseStructureApiResponse,
   ListResourcesParams,
-  ListResourcesResponse,
+  ListResourcesApiResponse,
   SearchResourcesParams,
-  SearchResourcesResponse,
-  DeleteResourceResponse,
-  SuccessResponse,
-} from '../types/api';
+  SearchResourcesApiResponse,
+  DeleteResourceApiResponse,
+  SuccessApiResponse,
+} from '../types';
 
 /** Upload client configuration options */
 export interface UploadClientConfig {
@@ -64,37 +64,37 @@ export class UploadClient extends BaseClient {
   }
 
   /** Generate presigned URL for file upload */
-  async generatePresignedUrl(request: PresignedUrlRequest): Promise<PresignedUrlResponse> {
-    return this.post<PresignedUrlResponse>('/upload/presign', request);
+  async generatePresignedUrl(request: PresignedUrlRequest): Promise<PresignedUrlApiResponse> {
+    return this.post<PresignedUrlApiResponse>('/upload/presign', request);
   }
 
   /** Finalize upload and create resource */
-  async finalizeUpload(request: CreateResourceRequest): Promise<CreateResourceResponse> {
-    return this.post<CreateResourceResponse>('/resources', request);
+  async finalizeUpload(request: CreateResourceRequest): Promise<CreateResourceApiResponse> {
+    return this.post<CreateResourceApiResponse>('/resources', request);
   }
 
   /** Bulk finalize uploads and create multiple resources */
-  async bulkFinalizeUpload(request: BulkCreateResourceRequest): Promise<BulkCreateResourceResponse> {
-    return this.post<BulkCreateResourceResponse>('/resources/bulk', request);
+  async bulkFinalizeUpload(request: BulkCreateResourceRequest): Promise<BulkCreateResourceApiResponse> {
+    return this.post<BulkCreateResourceApiResponse>('/resources/bulk', request);
   }
 
   /** Get resource by ID */
-  async getResource(resourceId: string): Promise<ResourceResponse> {
-    return this.get<ResourceResponse>(`/resources/${resourceId}`);
+  async getResource(resourceId: string): Promise<ResourceApiResponse> {
+    return this.get<ResourceApiResponse>(`/resources/${resourceId}`);
   }
 
   /** Update resource metadata */
-  async updateResource(resourceId: string, request: UpdateResourceRequest): Promise<ResourceResponse> {
-    return this.patch<ResourceResponse>(`/resources/${resourceId}`, request);
+  async updateResource(resourceId: string, request: UpdateResourceRequest): Promise<ResourceApiResponse> {
+    return this.patch<ResourceApiResponse>(`/resources/${resourceId}`, request);
   }
 
   /** Delete resource */
-  async deleteResource(resourceId: string): Promise<DeleteResourceResponse> {
-    return this.delete<DeleteResourceResponse>(`/resources/${resourceId}`);
+  async deleteResource(resourceId: string): Promise<DeleteResourceApiResponse> {
+    return this.delete<DeleteResourceApiResponse>(`/resources/${resourceId}`);
   }
 
   /** List resources with filtering and pagination */
-  async listResources(params?: ListResourcesParams): Promise<ListResourcesResponse> {
+  async listResources(params?: ListResourcesParams): Promise<ListResourcesApiResponse> {
     const queryParams = new URLSearchParams();
     
     if (params) {
@@ -110,11 +110,11 @@ export class UploadClient extends BaseClient {
     }
     
     const url = `/resources${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
-    return this.get<ListResourcesResponse>(url);
+    return this.get<ListResourcesApiResponse>(url);
   }
 
   /** Search resources with full-text search */
-  async searchResources(params: SearchResourcesParams): Promise<SearchResourcesResponse> {
+  async searchResources(params: SearchResourcesParams): Promise<SearchResourcesApiResponse> {
     const queryParams = new URLSearchParams();
     
     Object.entries(params).forEach(([key, value]) => {
@@ -127,27 +127,27 @@ export class UploadClient extends BaseClient {
       }
     });
     
-    return this.get<SearchResourcesResponse>(`/search?${queryParams.toString()}`);
+    return this.get<SearchResourcesApiResponse>(`/search?${queryParams.toString()}`);
   }
 
   /** Get course structure with chapters and materials */
-  async getCourseStructure(courseId: string): Promise<CourseStructureResponse> {
-    return this.get<CourseStructureResponse>(`/courses/${courseId}/structure`);
+  async getCourseStructure(courseId: string): Promise<CourseStructureApiResponse> {
+    return this.get<CourseStructureApiResponse>(`/courses/${courseId}/structure`);
   }
 
   /** Validate S3 upload (internal use) */
-  async validateS3Upload(s3Key: string): Promise<SuccessResponse> {
-    return this.post<SuccessResponse>('/upload/validate', { s3Key });
+  async validateS3Upload(s3Key: string): Promise<SuccessApiResponse> {
+    return this.post<SuccessApiResponse>('/upload/validate', { s3Key });
   }
 
   /** Process video (trigger video processing) */
-  async processVideo(resourceId: string): Promise<SuccessResponse> {
-    return this.post<SuccessResponse>(`/resources/${resourceId}/process-video`);
+  async processVideo(resourceId: string): Promise<SuccessApiResponse> {
+    return this.post<SuccessApiResponse>(`/resources/${resourceId}/process-video`);
   }
 
   /** Cleanup orphaned files (admin operation) */
-  async cleanupOrphanedFiles(): Promise<SuccessResponse> {
-    return this.post<SuccessResponse>('/admin/cleanup-orphaned-files');
+  async cleanupOrphanedFiles(): Promise<SuccessApiResponse> {
+    return this.post<SuccessApiResponse>('/admin/cleanup-orphaned-files');
   }
 
   /** Set authentication token for subsequent requests */
@@ -173,9 +173,14 @@ export class UploadClient extends BaseClient {
       contentType,
     });
 
+    // Check if response is successful
+    if (!presignedResponse.success) {
+      throw new Error(`Failed to generate presigned URL: ${presignedResponse.error.message}`);
+    }
+
     // Upload to S3
     try {
-      const response = await fetch(presignedResponse.url, {
+      const response = await fetch(presignedResponse.data.url, {
         method: 'PUT',
         body: file,
         headers: {
@@ -192,7 +197,7 @@ export class UploadClient extends BaseClient {
         onProgress(100);
       }
 
-      return presignedResponse.key;
+      return presignedResponse.data.key;
     } catch (error) {
       throw new Error(`Failed to upload file to S3: ${error}`);
     }
@@ -205,14 +210,16 @@ export class UploadClient extends BaseClient {
     contentType: string,
     resourceData: Omit<CreateResourceRequest, 's3Key'>,
     onProgress?: (progress: number) => void
-  ): Promise<CreateResourceResponse> {
+  ): Promise<CreateResourceApiResponse> {
     // Step 1: Upload file to S3
     const s3Key = await this.uploadFile(file, filename, contentType, onProgress);
 
     // Step 2: Finalize upload and create resource
-    return this.finalizeUpload({
+    const finalizeResponse = await this.finalizeUpload({
       ...resourceData,
       s3Key,
     });
+
+    return finalizeResponse;
   }
 }

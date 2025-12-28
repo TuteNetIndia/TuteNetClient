@@ -13,16 +13,17 @@ import {
 } from '@tutenet/client-core';
 import { 
   GetProfileRequest, 
-  GetProfileResponse,
+  GetProfileApiResponse,
   UpdateProfileRequestData,
-  UpdateProfileResponse,
+  UpdateProfileApiResponse,
   UploadAvatarRequest,
-  UploadAvatarResponse,
+  UploadAvatarApiResponse,
   CreateProfileFromRegistrationRequest,
-  CreateProfileFromRegistrationResponse,
+  CreateProfileFromRegistrationApiResponse,
   ValidateStatisticsRequest,
-  ValidateStatisticsResponse 
-} from '../types/api';
+  ValidateStatisticsApiResponse,
+  GetProfileResponse
+} from '../types';
 
 /**
  * Profile Service Client
@@ -42,7 +43,7 @@ export class ProfileClient extends BaseClient {
     userId: string, 
     options?: Omit<GetProfileRequest, 'userId'>,
     config?: RequestConfig
-  ): Promise<GetProfileResponse> {
+  ): Promise<GetProfileApiResponse> {
     try {
       const clientConfig = this.getConfig();
       
@@ -57,7 +58,7 @@ export class ProfileClient extends BaseClient {
 
       const url = this.buildUrl(`/profile/${userId}`, params);
       
-      const response = await this.get<GetProfileResponse>(url, config);
+      const response = await this.get<GetProfileApiResponse>(url, config);
       
       if (clientConfig.debug) {
         console.debug(`[ProfileClient] Profile retrieved successfully for user: ${userId}`);
@@ -84,10 +85,10 @@ export class ProfileClient extends BaseClient {
     userId: string, 
     updates: UpdateProfileRequestData,
     config?: RequestConfig
-  ): Promise<UpdateProfileResponse> {
+  ): Promise<UpdateProfileApiResponse> {
     try {
       const url = this.buildUrl(`/profile/${userId}`);
-      return await this.put<UpdateProfileResponse>(url, updates, config);
+      return await this.put<UpdateProfileApiResponse>(url, updates, config);
     } catch (error) {
       throw this.handleProfileError(error, 'updateProfile');
     }
@@ -100,7 +101,7 @@ export class ProfileClient extends BaseClient {
     userId: string,
     request: UploadAvatarRequest,
     config?: RequestConfig
-  ): Promise<UploadAvatarResponse> {
+  ): Promise<UploadAvatarApiResponse> {
     try {
       const formData = new FormData();
       formData.append('file', request.file);
@@ -108,7 +109,7 @@ export class ProfileClient extends BaseClient {
       formData.append('contentType', request.contentType);
 
       const url = this.buildUrl(`/profile/${userId}/avatar`);
-      return await this.post<UploadAvatarResponse>(url, formData, {
+      return await this.post<UploadAvatarApiResponse>(url, formData, {
         ...config,
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -126,10 +127,10 @@ export class ProfileClient extends BaseClient {
   async createProfileFromRegistration(
     data: CreateProfileFromRegistrationRequest,
     config?: RequestConfig
-  ): Promise<CreateProfileFromRegistrationResponse> {
+  ): Promise<CreateProfileFromRegistrationApiResponse> {
     try {
       const url = this.buildUrl('/profile/from-registration');
-      return await this.post<CreateProfileFromRegistrationResponse>(url, data, config);
+      return await this.post<CreateProfileFromRegistrationApiResponse>(url, data, config);
     } catch (error) {
       throw this.handleProfileError(error, 'createProfileFromRegistration');
     }
@@ -142,13 +143,13 @@ export class ProfileClient extends BaseClient {
     userId: string,
     options?: Omit<ValidateStatisticsRequest, 'userId'>,
     config?: RequestConfig
-  ): Promise<ValidateStatisticsResponse> {
+  ): Promise<ValidateStatisticsApiResponse> {
     try {
       const params = new URLSearchParams();
       if (options?.forceRefresh) params.append('forceRefresh', 'true');
 
       const url = this.buildUrl(`/profile/${userId}/statistics/validate`, params);
-      return await this.post<ValidateStatisticsResponse>(url, {}, config);
+      return await this.post<ValidateStatisticsApiResponse>(url, {}, config);
     } catch (error) {
       throw this.handleProfileError(error, 'validateStatistics');
     }

@@ -22,10 +22,17 @@ import {
   ResetPasswordRequest,
   ChangePasswordRequest,
   DeleteAccountRequest,
-  AuthResponse,
-  User,
-  SuccessResponse,
-} from '../types/api';
+  SignUpApiResponse,
+  SignInApiResponse,
+  RefreshTokenApiResponse,
+  VerifyEmailApiResponse,
+  ResendVerificationApiResponse,
+  ForgotPasswordApiResponse,
+  ResetPasswordApiResponse,
+  ChangePasswordApiResponse,
+  DeleteAccountApiResponse,
+  GetCurrentUserApiResponse,
+} from '../types';
 
 /**
  * Auth client configuration
@@ -72,71 +79,71 @@ export class AuthClient extends BaseClient {
   /**
    * Sign up a new user
    */
-  async signUp(request: SignUpRequest): Promise<AuthResponse> {
-    return this.post<AuthResponse>('/auth/signup', request);
+  async signUp(request: SignUpRequest): Promise<SignUpApiResponse> {
+    return this.post<SignUpApiResponse>('/auth/signup', request);
   }
 
   /**
    * Sign in an existing user
    */
-  async signIn(request: SignInRequest): Promise<AuthResponse> {
-    return this.post<AuthResponse>('/auth/signin', request);
+  async signIn(request: SignInRequest): Promise<SignInApiResponse> {
+    return this.post<SignInApiResponse>('/auth/signin', request);
   }
 
   /**
    * Get current user information
    */
-  async getCurrentUser(): Promise<User> {
-    return this.get<User>('/auth/me');
+  async getCurrentUser(): Promise<GetCurrentUserApiResponse> {
+    return this.get<GetCurrentUserApiResponse>('/auth/me');
   }
 
   /**
    * Refresh authentication tokens
    */
-  async refreshToken(request: RefreshTokenRequest): Promise<AuthResponse> {
-    return this.post<AuthResponse>('/auth/refresh', request);
+  async refreshToken(request: RefreshTokenRequest): Promise<RefreshTokenApiResponse> {
+    return this.post<RefreshTokenApiResponse>('/auth/refresh', request);
   }
 
   /**
    * Verify email address
    */
-  async verifyEmail(request: VerifyEmailRequest): Promise<SuccessResponse> {
-    return this.post<SuccessResponse>('/auth/verify-email', request);
+  async verifyEmail(request: VerifyEmailRequest): Promise<VerifyEmailApiResponse> {
+    return this.post<VerifyEmailApiResponse>('/auth/verify-email', request);
   }
 
   /**
    * Resend verification code
    */
-  async resendVerification(request: ResendVerificationRequest): Promise<SuccessResponse> {
-    return this.post<SuccessResponse>('/auth/resend-verification', request);
+  async resendVerification(request: ResendVerificationRequest): Promise<ResendVerificationApiResponse> {
+    return this.post<ResendVerificationApiResponse>('/auth/resend-verification', request);
   }
 
   /**
    * Request password reset
    */
-  async forgotPassword(request: ForgotPasswordRequest): Promise<SuccessResponse> {
-    return this.post<SuccessResponse>('/auth/forgot-password', request);
+  async forgotPassword(request: ForgotPasswordRequest): Promise<ForgotPasswordApiResponse> {
+    return this.post<ForgotPasswordApiResponse>('/auth/forgot-password', request);
   }
 
   /**
    * Reset password with code
    */
-  async resetPassword(request: ResetPasswordRequest): Promise<SuccessResponse> {
-    return this.post<SuccessResponse>('/auth/reset-password', request);
+  async resetPassword(request: ResetPasswordRequest): Promise<ResetPasswordApiResponse> {
+    return this.post<ResetPasswordApiResponse>('/auth/reset-password', request);
   }
 
   /**
    * Change password (requires authentication)
    */
-  async changePassword(request: ChangePasswordRequest): Promise<SuccessResponse> {
-    return this.post<SuccessResponse>('/auth/change-password', request);
+  async changePassword(request: ChangePasswordRequest): Promise<ChangePasswordApiResponse> {
+    return this.post<ChangePasswordApiResponse>('/auth/change-password', request);
   }
 
   /**
    * Delete user account (requires authentication)
    */
-  async deleteAccount(request: DeleteAccountRequest): Promise<SuccessResponse> {
-    return this.post<SuccessResponse>('/auth/account', request);
+  async deleteAccount(request: DeleteAccountRequest): Promise<DeleteAccountApiResponse> {
+    return this.post<DeleteAccountApiResponse>('/auth/account', request);
   }
 
   /**

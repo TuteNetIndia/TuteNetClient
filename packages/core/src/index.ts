@@ -29,10 +29,15 @@ export {
   isClientError,
   isRetryableError
 } from './errors/clientErrors';
-export type { ErrorResponse } from './errors/clientErrors';
 
 // Common types
-export type { ApiResponse, PaginatedResponse, SuccessResponse } from './types/apiTypes';
+export type { 
+  ApiResponse, 
+  PaginatedResponse, 
+  SuccessResponse,
+  MessageResponse,
+  ErrorResponse
+} from './types/apiTypes';
 
 // Utilities
 export { retry, exponentialBackoff } from './utils/retry';

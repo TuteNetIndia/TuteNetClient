@@ -212,9 +212,21 @@ export abstract class BaseClient implements HttpClient {
    */
   private async executeRequest<T>(config: AxiosRequestConfig): Promise<T> {
     try {
-      const response: AxiosResponse<ApiResponse<T>> = await this.client.request(config);
+      const response: AxiosResponse<T> = await this.client.request(config);
       return this.handleResponse(response);
     } catch (error) {
+      // Check if this is an HTTP error with a response body
+      const axiosError = error as AxiosError;
+      if (axiosError.response && axiosError.response.data) {
+        const responseData = axiosError.response.data;
+        
+        // If the response has the API format with success: false, return it as-is
+        if (typeof responseData === 'object' && responseData !== null && 'success' in responseData && !responseData.success) {
+          return responseData as T;
+        }
+      }
+      
+      // For other errors (network, timeout, etc.), throw as before
       throw this.handleError(error, config.url || '');
     }
   }
@@ -222,7 +234,7 @@ export abstract class BaseClient implements HttpClient {
   /**
    * Handle successful response
    */
-  private handleResponse<T>(response: AxiosResponse<ApiResponse<T>>): T {
+  private handleResponse<T>(response: AxiosResponse<T>): T {
     const { data, status } = response;
     const requestId = response.headers['x-request-id'];
 
@@ -231,23 +243,11 @@ export abstract class BaseClient implements HttpClient {
       return data as unknown as T;
     }
 
-    // Handle API response format
+    // Handle API response format - return full response (including error responses)
     if ('success' in data) {
-      if (!data.success) {
-        throw createErrorFromResponse(status, data, requestId);
-      }
-
-      if (data.data === undefined) {
-        throw new ClientError(
-          'API returned success but no data',
-          'NO_DATA',
-          status,
-          undefined,
-          requestId
-        );
-      }
-
-      return data.data;
+      // Return the full API response (both success and error responses)
+      // This allows clients to handle union types properly
+      return data as T;
     }
 
     // Handle raw data responses

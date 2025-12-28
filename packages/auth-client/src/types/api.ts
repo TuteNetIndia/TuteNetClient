@@ -4,6 +4,19 @@
  * These types represent the API contract between clients and the Auth Service.
  */
 
+import {
+  SuccessResponse,
+  ErrorResponse,
+  MessageResponse
+} from '@tutenet/client-core';
+
+// Re-export common types for convenience
+export { MessageResponse, SuccessResponse, ErrorResponse };
+
+// =============================================================================
+// REQUEST TYPES
+// =============================================================================
+
 /**
  * User sign up request
  */
@@ -77,6 +90,10 @@ export interface DeleteAccountRequest {
   password: string;
 }
 
+// =============================================================================
+// DOMAIN MODELS
+// =============================================================================
+
 /**
  * User model (matches auth service User exactly)
  */
@@ -109,15 +126,40 @@ export interface AuthResponse {
   tokens: AuthTokens;
 }
 
-/**
- * Success response for operations without data
- */
-export interface SuccessResponse {
-  success: boolean;
-  message: string;
-}
+// =============================================================================
+// FULL API RESPONSE TYPES (using common response structure)
+// =============================================================================
 
-/**
- * Get current user response (returns User directly)
- */
-export type GetCurrentUserResponse = User;
+/** Sign up API response */
+export type SignUpApiResponse = SuccessResponse<AuthResponse> | ErrorResponse;
+
+/** Sign in API response */
+export type SignInApiResponse = SuccessResponse<AuthResponse> | ErrorResponse;
+
+/** Token refresh API response */
+export type RefreshTokenApiResponse = SuccessResponse<AuthTokens> | ErrorResponse;
+
+/** Email verification API response */
+export type VerifyEmailApiResponse = SuccessResponse<MessageResponse> | ErrorResponse;
+
+/** Resend verification API response */
+export type ResendVerificationApiResponse = SuccessResponse<MessageResponse> | ErrorResponse;
+
+/** Forgot password API response */
+export type ForgotPasswordApiResponse = SuccessResponse<MessageResponse> | ErrorResponse;
+
+/** Reset password API response */
+export type ResetPasswordApiResponse = SuccessResponse<MessageResponse> | ErrorResponse;
+
+/** Change password API response */
+export type ChangePasswordApiResponse = SuccessResponse<MessageResponse> | ErrorResponse;
+
+/** Delete account API response */
+export type DeleteAccountApiResponse = SuccessResponse<MessageResponse> | ErrorResponse;
+
+/** Get current user API response */
+export type GetCurrentUserApiResponse = SuccessResponse<User> | ErrorResponse;
+
+// =============================================================================
+// DATA-ONLY RESPONSE TYPES (for backward compatibility)
+// =============================================================================
