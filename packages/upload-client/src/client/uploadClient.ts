@@ -17,8 +17,6 @@ import {
 import {
   PresignedUrlRequest,
   PresignedUrlApiResponse,
-  CreateResourceRequest,
-  CreateResourceApiResponse,
   BulkCreateResourceRequest,
   BulkCreateResourceApiResponse,
   UpdateResourceRequest,
@@ -68,14 +66,9 @@ export class UploadClient extends BaseClient {
     return this.post<PresignedUrlApiResponse>('/upload/presign', request);
   }
 
-  /** Finalize upload and create resource */
-  async finalizeUpload(request: CreateResourceRequest): Promise<CreateResourceApiResponse> {
-    return this.post<CreateResourceApiResponse>('/resources', request);
-  }
-
   /** Bulk finalize uploads and create multiple resources */
   async bulkFinalizeUpload(request: BulkCreateResourceRequest): Promise<BulkCreateResourceApiResponse> {
-    return this.post<BulkCreateResourceApiResponse>('/resources/bulk', request);
+    return this.post<BulkCreateResourceApiResponse>('/resources', request);
   }
 
   /** Get resource by ID */
@@ -201,25 +194,5 @@ export class UploadClient extends BaseClient {
     } catch (error) {
       throw new Error(`Failed to upload file to S3: ${error}`);
     }
-  }
-
-  /** Complete upload workflow: generate presigned URL, upload to S3, and finalize */
-  async completeUpload(
-    file: File | Buffer,
-    filename: string,
-    contentType: string,
-    resourceData: Omit<CreateResourceRequest, 's3Key'>,
-    onProgress?: (progress: number) => void
-  ): Promise<CreateResourceApiResponse> {
-    // Step 1: Upload file to S3
-    const s3Key = await this.uploadFile(file, filename, contentType, onProgress);
-
-    // Step 2: Finalize upload and create resource
-    const finalizeResponse = await this.finalizeUpload({
-      ...resourceData,
-      s3Key,
-    });
-
-    return finalizeResponse;
   }
 }

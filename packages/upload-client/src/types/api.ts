@@ -30,8 +30,22 @@ export type ResourceVisibility = 'public' | 'private' | 'school';
 /** Resource status: draft, pending_review, published, rejected, archived */
 export type ResourceStatus = 'draft' | 'pending_review' | 'published' | 'rejected' | 'archived';
 
-/** Material types: lecture, worksheet, assignment, quiz, reference, other */
-export type MaterialType = 'lecture' | 'worksheet' | 'assignment' | 'quiz' | 'reference' | 'other';
+/** Material types: lecture_notes, assignment, practice_worksheet, video_lecture, reference_material, quiz_test, lab_manual, study_guide, presentation_slides, sample_paper, solution_manual, project, case_study, other */
+export type MaterialType = 
+  | 'lecture_notes'
+  | 'assignment' 
+  | 'practice_worksheet'
+  | 'video_lecture'
+  | 'reference_material'
+  | 'quiz_test'
+  | 'lab_manual'
+  | 'study_guide'
+  | 'presentation_slides'
+  | 'sample_paper'
+  | 'solution_manual'
+  | 'project'
+  | 'case_study'
+  | 'other';
 
 // =============================================================================
 // REQUEST TYPES
@@ -46,6 +60,7 @@ export interface PresignedUrlRequest {
 
 /** Create resource request */
 export interface CreateResourceRequest {
+  draftId: string;
   type: ResourceType;
   parentId?: string;
   rootId?: string;
@@ -64,7 +79,6 @@ export interface CreateResourceRequest {
   license?: string;
   sourceType?: string;
   licenseDetails?: string;
-  idempotencyKey?: string;
 }
 
 /** Bulk create resource request */
