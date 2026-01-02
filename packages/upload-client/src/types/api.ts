@@ -105,12 +105,23 @@ export interface UpdateResourceRequest {
   orderIndex?: number;
 }
 
-/** List resources query parameters */
+/** 
+ * List resources query parameters 
+ * 
+ * @example
+ * ```typescript
+ * const params: ListResourcesParams = {
+ *   grades: "K,1,2,3", // Comma-separated grades
+ *   subject: "Mathematics",
+ *   limit: 20
+ * };
+ * ```
+ */
 export interface ListResourcesParams {
   type?: ResourceType;
   userId?: string;
   subject?: string;
-  grades?: string;
+  grades?: string; // Comma-separated string: "K,1,2,3"
   language?: string;
   status?: ResourceStatus;
   visibility?: ResourceVisibility;
@@ -118,12 +129,23 @@ export interface ListResourcesParams {
   limit?: number;
 }
 
-/** Search resources query parameters */
+/** 
+ * Search resources query parameters 
+ * 
+ * @example
+ * ```typescript
+ * const params: SearchResourcesParams = {
+ *   q: "algebra worksheets",
+ *   grades: "9,10,11,12", // Comma-separated grades
+ *   subject: "Mathematics"
+ * };
+ * ```
+ */
 export interface SearchResourcesParams {
   q: string;
   type?: ResourceType;
   subject?: string;
-  grade?: string;
+  grades?: string; // Comma-separated string: "K,1,2,3"
   language?: string;
   materialType?: MaterialType;
   cursor?: string;
