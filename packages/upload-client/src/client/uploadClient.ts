@@ -21,13 +21,13 @@ import {
   BulkCreateResourceApiResponse,
   UpdateResourceRequest,
   ResourceApiResponse,
-  CourseStructureApiResponse,
   ListResourcesParams,
   ListResourcesApiResponse,
   SearchResourcesParams,
   SearchResourcesApiResponse,
   DeleteResourceApiResponse,
   SuccessApiResponse,
+  EnhancedResourceStructureApiResponse,
 } from '../types';
 
 /** Upload client configuration options */
@@ -123,9 +123,19 @@ export class UploadClient extends BaseClient {
     return this.get<SearchResourcesApiResponse>(`/search?${queryParams.toString()}`);
   }
 
-  /** Get course structure with chapters and materials */
-  async getCourseStructure(courseId: string): Promise<CourseStructureApiResponse> {
-    return this.get<CourseStructureApiResponse>(`/courses/${courseId}/structure`);
+  /** Get enhanced resource structure with contextual information and analytics */
+  async getResourceStructure(
+    resourceId: string, 
+    expand?: string
+  ): Promise<EnhancedResourceStructureApiResponse> {
+    const queryParams = new URLSearchParams();
+    
+    if (expand) {
+      queryParams.append('expand', expand);
+    }
+    
+    const url = `/resources/${resourceId}/structure${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+    return this.get<EnhancedResourceStructureApiResponse>(url);
   }
 
   /** Validate S3 upload (internal use) */

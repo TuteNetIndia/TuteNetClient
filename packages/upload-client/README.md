@@ -150,20 +150,32 @@ const results = await client.searchResources({
 console.log(`Found ${results.totalCount} results in ${results.searchTime}ms`);
 ```
 
-## Course Structure
+## Enhanced Resource Structure
 
-### Get Course with Chapters and Materials
+### Get Resource with Contextual Information
+
+The enhanced resource structure API provides comprehensive resource information with hierarchical context, analytics, and navigation data in a single call.
 
 ```typescript
-const course = await client.getCourseStructure('course-123');
+// Get basic resource structure (mobile-optimized)
+const resource = await client.getResourceStructure('course-123');
 
-console.log(`Course: ${course.course.title}`);
-course.chapters.forEach(chapter => {
-  console.log(`  Chapter: ${chapter.chapter.title}`);
-  chapter.materials.forEach(material => {
-    console.log(`    Material: ${material.title}`);
+// Get desktop-optimized structure
+const resource = await client.getResourceStructure('course-123', 'desktop');
+
+// Get custom expansions
+const resource = await client.getResourceStructure('course-123', 'children.full,siblings,navigation');
+
+console.log(`Resource: ${resource.data.resource.title}`);
+console.log(`Type: ${resource.data.type}`);
+console.log(`Analytics: ${resource.data.analytics.upvotesCount} upvotes`);
+
+// Access hierarchical context
+if (resource.data.context?.children) {
+  resource.data.context.children.forEach(child => {
+    console.log(`  Child: ${child.title}`);
   });
-});
+}
 ```
 
 ## Bulk Operations

@@ -56,7 +56,7 @@ export const ENDPOINTS = {
   },
   [Environment.STAGING]: {
     // Actual deployed API Gateway endpoints for staging
-    [ApiType.EXTERNAL]: 'https://32d6gfn27g.execute-api.ap-south-1.amazonaws.com/staging/v1',
+    [ApiType.EXTERNAL]: 'https://gsayr9ef1e.execute-api.ap-south-1.amazonaws.com/staging/v1',
     [ApiType.INTERNAL]: 'https://nenm54vjg3.execute-api.ap-south-1.amazonaws.com/staging',
   },
   [Environment.PRODUCTION]: {

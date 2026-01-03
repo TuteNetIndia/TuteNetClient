@@ -47,6 +47,14 @@ export type MaterialType =
   | 'case_study'
   | 'other';
 
+/** Structure response types for enhanced resource structure API */
+export enum StructureResponseType {
+  STANDALONE_RESOURCE = 'standalone_resource',  // Standalone resource response
+  COURSE_STRUCTURE = 'course_structure',        // Course with hierarchy
+  CHAPTER_CONTEXT = 'chapter_context',          // Chapter with navigation
+  MATERIAL_CONTEXT = 'material_context'         // Material with navigation
+}
+
 // =============================================================================
 // REQUEST TYPES
 // =============================================================================
@@ -155,6 +163,85 @@ export interface SearchResourcesParams {
 }
 
 // =============================================================================
+// ENHANCED RESOURCE STRUCTURE API TYPES
+// =============================================================================
+
+/** Breadcrumb item for navigation */
+export interface BreadcrumbItem {
+  id: string;
+  title: string;
+  type: ResourceType;
+  url?: string;                // Optional URL for clickable breadcrumbs
+}
+
+/** Jump-to option for quick navigation */
+export interface JumpToOption {
+  id: string;
+  title: string;
+  type: ResourceType;
+  section?: string;            // Section within resource (for long content)
+}
+
+/** Resource analytics data */
+export interface ResourceAnalytics {
+  // Essential engagement metrics (always present, never null)
+  // These align with existing ResourceResponse analytics fields
+  upvotesCount: number;          // Number of upvotes (>= 0) - maps to 'upvotesCount' in ResourceResponse
+  commentsCount: number;         // Number of comments (>= 0) - maps to 'comments' in ResourceResponse
+  downloadsCount: number;        // Number of downloads (>= 0) - maps to 'downloads' in ResourceResponse
+  averageRating: number;         // Average rating 0.0-5.0 (0.0 if no ratings) - maps to 'rating' in ResourceResponse
+  
+  // User interaction flags (always present for authenticated users)
+  upvotedByMe: boolean;          // true if current user upvoted this resource
+  bookmarkedByMe?: boolean;      // true if current user bookmarked (optional feature)
+  
+  // Optional metrics (only when available and tracked)
+  viewsCount?: number;           // Total view count (>= 0, undefined if not tracked)
+}
+
+/** Navigation context for hierarchical resources */
+export interface NavigationContext {
+  // Position within parent container
+  position: {
+    current: number;             // Current position (1-based index)
+    total: number;               // Total items in container
+  };
+  
+  // Adjacent resources for navigation
+  adjacent: {
+    previous?: { id: string; title: string };  // Previous resource (null if first)
+    next?: { id: string; title: string };      // Next resource (null if last)
+  };
+  
+  // Enhanced navigation (when expand=navigation requested)
+  breadcrumbs?: BreadcrumbItem[];              // Path from root to current
+  jumpTo?: JumpToOption[];                     // Quick navigation options
+}
+
+/** Resource context with hierarchical relationships */
+export interface ResourceContext {
+  // Hierarchical relationships (based on expand parameters)
+  course?: ResourceResponse;     // Root course (for chapters and materials)
+  chapter?: ResourceResponse;    // Parent chapter (for materials only)
+  parent?: ResourceResponse;     // Direct parent (chapter for material, course for chapter)
+  children?: ResourceResponse[]; // Direct children (chapters for course, materials for chapter)
+  siblings?: ResourceResponse[]; // Resources at same level (same parent)
+  ancestors?: ResourceResponse[];// Complete parent chain (material -> chapter -> course)
+  descendants?: ResourceResponse[];// All nested children (course -> chapters -> materials)
+  related?: ResourceResponse[];  // Algorithmically related resources (max 10)
+  
+  // Navigation context (for hierarchical resources)
+  navigation?: NavigationContext;
+}
+
+/** Enhanced course structure for course resources */
+export interface EnhancedCourseStructure {
+  chapters: ResourceResponse[];            // All chapters in order (with materials as children)
+  totalMaterials: number;                  // Total count of materials across all chapters
+  estimatedDuration?: number;              // Total estimated duration in minutes
+}
+
+// =============================================================================
 // RESPONSE DATA TYPES (for the 'data' field)
 // =============================================================================
 
@@ -225,15 +312,6 @@ export interface BulkCreateResourceResponse {
   }>;
 }
 
-/** Course structure response */
-export interface CourseStructureResponse {
-  course: ResourceResponse;
-  chapters: Array<{
-    chapter: ResourceResponse;
-    materials: ResourceResponse[];
-  }>;
-}
-
 /** List resources response */
 export interface ListResourcesResponse {
   items: ResourceResponse[];
@@ -254,6 +332,22 @@ export interface SearchResourcesResponse {
 /** Delete resource response (data only) */
 export interface DeleteResourceResponse {
   message: string;
+}
+
+/** Enhanced resource structure response data */
+export interface EnhancedResourceStructureResponse {
+  type: StructureResponseType;           // Discriminator for response structure
+  resource: ResourceResponse;            // Primary resource (always present)
+  analytics: ResourceAnalytics;          // Analytics data (always present)
+  
+  // Type-specific context (mutually exclusive)
+  context?: ResourceContext;             // For chapter_context, material_context
+  structure?: EnhancedCourseStructure;   // For course_structure only
+  
+  // Expanded data (when expand parameters used)
+  expandedContext?: {
+    [key: string]: ResourceResponse[] | ResourceResponse | any;  // Dynamic based on expand params
+  };
 }
 
 // =============================================================================
@@ -294,8 +388,8 @@ export type SearchResourcesApiResponse = (PaginatedResponse<ResourceResponse> & 
 /** Delete resource API response */
 export type DeleteResourceApiResponse = SuccessResponse<DeleteResourceResponse> | ErrorResponse;
 
-/** Course structure API response */
-export type CourseStructureApiResponse = SuccessResponse<CourseStructureResponse> | ErrorResponse;
+/** Enhanced resource structure API response */
+export type EnhancedResourceStructureApiResponse = SuccessResponse<EnhancedResourceStructureResponse> | ErrorResponse;
 
 /** Success operation API response */
 export type SuccessApiResponse = SuccessResponse<MessageResponse> | ErrorResponse;
