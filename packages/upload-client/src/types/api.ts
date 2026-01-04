@@ -22,30 +22,176 @@ export { PaginatedResponse, SuccessResponse, MessageResponse, ErrorResponse };
 // =============================================================================
 
 /** Resource types: standalone, course, chapter, material */
-export type ResourceType = 'standalone' | 'course' | 'chapter' | 'material';
+export enum ResourceType {
+  STANDALONE = 'standalone',
+  COURSE = 'course',
+  CHAPTER = 'chapter',
+  MATERIAL = 'material'
+}
 
 /** Resource visibility: public, private, school */
-export type ResourceVisibility = 'public' | 'private' | 'school';
+export enum ResourceVisibility {
+  PUBLIC = 'public',
+  PRIVATE = 'private',
+  SCHOOL = 'school'
+}
 
 /** Resource status: draft, pending_review, published, rejected, archived */
-export type ResourceStatus = 'draft' | 'pending_review' | 'published' | 'rejected' | 'archived';
+export enum ResourceStatus {
+  DRAFT = 'draft',
+  PENDING_REVIEW = 'pending_review',
+  PUBLISHED = 'published',
+  REJECTED = 'rejected',
+  ARCHIVED = 'archived'
+}
 
 /** Material types: lecture_notes, assignment, practice_worksheet, video_lecture, reference_material, quiz_test, lab_manual, study_guide, presentation_slides, sample_paper, solution_manual, project, case_study, other */
-export type MaterialType = 
-  | 'lecture_notes'
-  | 'assignment' 
-  | 'practice_worksheet'
-  | 'video_lecture'
-  | 'reference_material'
-  | 'quiz_test'
-  | 'lab_manual'
-  | 'study_guide'
-  | 'presentation_slides'
-  | 'sample_paper'
-  | 'solution_manual'
-  | 'project'
-  | 'case_study'
-  | 'other';
+export enum MaterialType {
+  LECTURE_NOTES = 'lecture_notes',
+  ASSIGNMENT = 'assignment',
+  PRACTICE_WORKSHEET = 'practice_worksheet',
+  VIDEO_LECTURE = 'video_lecture',
+  REFERENCE_MATERIAL = 'reference_material',
+  QUIZ_TEST = 'quiz_test',
+  LAB_MANUAL = 'lab_manual',
+  STUDY_GUIDE = 'study_guide',
+  PRESENTATION_SLIDES = 'presentation_slides',
+  SAMPLE_PAPER = 'sample_paper',
+  SOLUTION_MANUAL = 'solution_manual',
+  PROJECT = 'project',
+  CASE_STUDY = 'case_study',
+  OTHER = 'other'
+}
+
+/** Educational subjects */
+export enum Subject {
+  MATHEMATICS = 'Mathematics',
+  SCIENCE = 'Science',
+  ENGLISH = 'English',
+  HISTORY = 'History',
+  GEOGRAPHY = 'Geography',
+  PHYSICS = 'Physics',
+  CHEMISTRY = 'Chemistry',
+  BIOLOGY = 'Biology',
+  COMPUTER_SCIENCE = 'Computer Science',
+  ART = 'Art',
+  MUSIC = 'Music',
+  PHYSICAL_EDUCATION = 'Physical Education',
+  SOCIAL_STUDIES = 'Social Studies',
+  FOREIGN_LANGUAGE = 'Foreign Language',
+  ECONOMICS = 'Economics',
+  PSYCHOLOGY = 'Psychology',
+  PHILOSOPHY = 'Philosophy',
+  LITERATURE = 'Literature',
+  OTHER = 'Other'
+}
+
+/** Supported languages */
+export enum Language {
+  ENGLISH = 'English',
+  SPANISH = 'Spanish',
+  FRENCH = 'French',
+  GERMAN = 'German',
+  ITALIAN = 'Italian',
+  PORTUGUESE = 'Portuguese',
+  CHINESE = 'Chinese',
+  JAPANESE = 'Japanese',
+  KOREAN = 'Korean',
+  ARABIC = 'Arabic',
+  HINDI = 'Hindi',
+  RUSSIAN = 'Russian',
+  OTHER = 'Other'
+}
+
+/** License types for educational resources */
+export enum LicenseType {
+  ORIGINAL = 'Original',
+  CREATIVE_COMMONS_BY = 'Creative Commons BY',
+  CREATIVE_COMMONS_BY_SA = 'Creative Commons BY-SA',
+  CREATIVE_COMMONS_BY_NC = 'Creative Commons BY-NC',
+  CREATIVE_COMMONS_BY_NC_SA = 'Creative Commons BY-NC-SA',
+  PUBLIC_DOMAIN = 'Public Domain',
+  FAIR_USE = 'Fair Use',
+  PERMISSION_GRANTED = 'Permission Granted',
+  OTHER = 'Other'
+}
+
+/** Source types for educational resources */
+export enum SourceType {
+  ORIGINAL = 'original',
+  ADAPTED = 'adapted',
+  CURATED = 'curated',
+  TRANSLATED = 'translated',
+  REPUBLISHED = 'republished'
+}
+
+/** Search sort options */
+export enum SearchSortBy {
+  RELEVANCE = 'relevance',
+  CREATED_AT = 'createdAt',
+  DOWNLOADS = 'downloads',
+  RATING = 'rating',
+  TITLE = 'title',
+  UPDATED_AT = 'updatedAt'
+}
+
+/** Sort order options */
+export enum SortOrder {
+  ASC = 'asc',
+  DESC = 'desc'
+}
+
+/** Video resolution options */
+export enum VideoResolution {
+  SD_480P = '480p',
+  HD_720P = '720p',
+  FULL_HD_1080P = '1080p',
+  UHD_4K = '4K'
+}
+
+/** Video codec options */
+export enum VideoCodec {
+  H264 = 'H.264',
+  H265 = 'H.265',
+  VP9 = 'VP9',
+  AV1 = 'AV1'
+}
+
+/** Supported file types (MIME types) */
+export enum FileType {
+  // Documents
+  PDF = 'application/pdf',
+  DOC = 'application/msword',
+  DOCX = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  PPT = 'application/vnd.ms-powerpoint',
+  PPTX = 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+  XLS = 'application/vnd.ms-excel',
+  XLSX = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  TXT = 'text/plain',
+  RTF = 'application/rtf',
+  
+  // Images
+  JPEG = 'image/jpeg',
+  PNG = 'image/png',
+  GIF = 'image/gif',
+  SVG = 'image/svg+xml',
+  WEBP = 'image/webp',
+  
+  // Videos
+  MP4 = 'video/mp4',
+  WEBM = 'video/webm',
+  AVI = 'video/x-msvideo',
+  MOV = 'video/quicktime',
+  
+  // Audio
+  MP3 = 'audio/mpeg',
+  WAV = 'audio/wav',
+  OGG = 'audio/ogg',
+  
+  // Archives
+  ZIP = 'application/zip',
+  RAR = 'application/vnd.rar'
+}
 
 /** Structure response types for enhanced resource structure API */
 export enum StructureResponseType {
@@ -75,17 +221,17 @@ export interface CreateResourceRequest {
   orderIndex?: number;
   title: string;
   description?: string;
-  subject: string;
+  subject: Subject;
   grades: string[];
   tags: string[];
-  language: string;
+  language: Language;
   visibility: ResourceVisibility;
   s3Key?: string;
   materialType?: MaterialType;
   userId: string;
   topic?: string;
-  license?: string;
-  sourceType?: string;
+  license?: LicenseType;
+  sourceType?: SourceType;
   licenseDetails?: string;
 }
 
@@ -99,15 +245,15 @@ export interface BulkCreateResourceRequest {
 export interface UpdateResourceRequest {
   title?: string;
   description?: string;
-  subject?: string;
+  subject?: Subject;
   grades?: string[];
   tags?: string[];
-  language?: string;
+  language?: Language;
   visibility?: ResourceVisibility;
   materialType?: MaterialType;
   topic?: string;
-  license?: string;
-  sourceType?: string;
+  license?: LicenseType;
+  sourceType?: SourceType;
   licenseDetails?: string;
   status?: ResourceStatus;
   orderIndex?: number;
@@ -120,7 +266,7 @@ export interface UpdateResourceRequest {
  * ```typescript
  * const params: ListResourcesParams = {
  *   grades: "K,1,2,3", // Comma-separated grades
- *   subject: "Mathematics",
+ *   subject: Subject.MATHEMATICS,
  *   limit: 20
  * };
  * ```
@@ -128,9 +274,9 @@ export interface UpdateResourceRequest {
 export interface ListResourcesParams {
   type?: ResourceType;
   userId?: string;
-  subject?: string;
+  subject?: Subject;
   grades?: string; // Comma-separated string: "K,1,2,3"
-  language?: string;
+  language?: Language;
   status?: ResourceStatus;
   visibility?: ResourceVisibility;
   cursor?: string;
@@ -145,21 +291,21 @@ export interface ListResourcesParams {
  * const params: SearchResourcesParams = {
  *   q: "algebra worksheets",
  *   grades: "9,10,11,12", // Comma-separated grades
- *   subject: "Mathematics"
+ *   subject: Subject.MATHEMATICS
  * };
  * ```
  */
 export interface SearchResourcesParams {
   q: string;
   type?: ResourceType;
-  subject?: string;
+  subject?: Subject;
   grades?: string; // Comma-separated string: "K,1,2,3"
-  language?: string;
+  language?: Language;
   materialType?: MaterialType;
   cursor?: string;
   limit?: number;
-  sortBy?: 'relevance' | 'createdAt' | 'downloads' | 'rating';
-  sortOrder?: 'asc' | 'desc';
+  sortBy?: SearchSortBy;
+  sortOrder?: SortOrder;
 }
 
 // =============================================================================
@@ -261,13 +407,13 @@ export interface ResourceResponse {
   orderIndex?: number;
   title: string;
   description?: string;
-  subject: string;
+  subject: Subject;
   grades: string[];
   tags: string[];
-  language: string;
+  language: Language;
   visibility: ResourceVisibility;
   fileName?: string;
-  fileType?: string;
+  fileType?: FileType;
   size?: number;
   materialType?: MaterialType;
   userId: string;
@@ -286,13 +432,14 @@ export interface ResourceResponse {
   allowOffline: boolean;
   watermarkEnabled: boolean;
   topic?: string;
-  license?: string;
-  sourceType?: string;
+  license?: LicenseType;
+  sourceType?: SourceType;
   licenseDetails?: string;
   thumbnailUrl?: string;
+  previewUrl?: string;          // Presigned S3 URL for file preview (materials and standalone only, 15-min expiry)
   videoDuration?: number;
-  videoResolution?: string;
-  videoCodec?: string;
+  videoResolution?: VideoResolution;
+  videoCodec?: VideoCodec;
   transcodedUrl?: string;
 }
 
