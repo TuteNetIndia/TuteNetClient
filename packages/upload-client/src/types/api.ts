@@ -540,3 +540,57 @@ export type EnhancedResourceStructureApiResponse = SuccessResponse<EnhancedResou
 
 /** Success operation API response */
 export type SuccessApiResponse = SuccessResponse<MessageResponse> | ErrorResponse;
+
+// =============================================================================
+// CONTENT ACCESS API TYPES
+// =============================================================================
+
+/** Valid access types for resource content */
+export enum ContentAccessType {
+  VIEW = 'view',
+  STREAM = 'stream',
+  DOWNLOAD = 'download'
+}
+
+/** Content metadata for different file types */
+export interface ContentMetadata {
+  fileType: FileType;
+  fileSize: number;
+  fileName?: string;
+  duration?: number; // For video/audio files in seconds
+  dimensions?: {
+    width: number;
+    height: number;
+  }; // For images/videos
+}
+
+/** Viewing options for content access */
+export interface ViewingOptions {
+  supportsOffline: boolean;
+  supportsStreaming: boolean;
+  requiresApp: boolean;
+  maxOfflineDays?: number;
+  canPrint?: boolean;
+  canShare?: boolean;
+  watermarkEnabled?: boolean;
+  securityLevel?: 'public' | 'app-restricted' | 'device-locked';
+  urlExpiration?: number; // Expiration time in seconds
+}
+
+/** Resource content access response data */
+export interface ResourceContentAccessResponse {
+  contentUrl: string;
+  accessType: ContentAccessType;
+  expiresAt: string; // ISO 8601 timestamp
+  contentMetadata: ContentMetadata;
+  viewingOptions: ViewingOptions;
+  cacheHeaders?: {
+    'Cache-Control': string;
+    'ETag'?: string;
+    'Expires': string;
+    'Last-Modified'?: string;
+  };
+}
+
+/** Resource content access API response */
+export type ResourceContentAccessApiResponse = SuccessResponse<ResourceContentAccessResponse> | ErrorResponse;

@@ -1,6 +1,17 @@
 # @tutenet/upload-client
 
-TypeScript client for the TuteNet Upload Service API. Provides type-safe methods for resource upload operations including file uploads, resource management, and search functionality.
+TypeScript client for the TuteNet Upload Service API. Provides type-safe methods for resource upload operations, secure content access, and comprehensive resource management.
+
+## Features
+
+- 🚀 **Upload Management**: Secure file uploads via presigned URLs
+- 🔒 **Content Access**: App-only secure content access with advanced security
+- 📚 **Resource Management**: Full CRUD operations for educational resources
+- 🔍 **Search & Discovery**: Advanced search with filtering and pagination
+- 📱 **Mobile-First**: Optimized for mobile app integration
+- 🛡️ **Security**: JWT authentication, rate limiting, and app-restricted URLs
+- 📊 **Analytics**: Resource analytics and engagement metrics
+- 🌐 **Multi-Environment**: Support for dev, staging, and production
 
 ## Installation
 
@@ -10,19 +21,133 @@ npm install @tutenet/upload-client
 
 ## Quick Start
 
+### Upload Client
+
 ```typescript
 import { UploadClient, Environment } from '@tutenet/upload-client';
 
 // Create client (auto-detects environment)
-const client = new UploadClient({
+const uploadClient = new UploadClient({
   accessToken: 'your-jwt-token'
 });
 
 // Or specify environment explicitly
-const client = new UploadClient({
+const uploadClient = new UploadClient({
   environment: Environment.STAGING,
   accessToken: 'your-jwt-token'
 });
+```
+
+### Access Client ⭐ NEW
+
+```typescript
+import { AccessClient, ContentAccessType } from '@tutenet/upload-client';
+
+// Create access client for secure content access
+const accessClient = new AccessClient({
+  environment: Environment.STAGING,
+  accessToken: 'your-jwt-token'
+});
+
+// Get secure content access
+const response = await accessClient.getContentAccess(
+  'resource-123',
+  ContentAccessType.VIEW
+);
+
+if (response.success) {
+  const { contentUrl, expiresAt, viewingOptions } = response.data;
+  
+  // Validate security parameters before use
+  const validation = accessClient.validateSecurityParams(
+    contentUrl,
+    'resource-123',
+    'user-456'
+  );
+  
+  if (validation.isValid) {
+    // Safe to use URL in your app
+    displayContent(contentUrl);
+  }
+}
+```
+
+## Content Access API ⭐ NEW
+
+### Secure Content Access
+
+The new Content Access API provides app-only access to educational resources with advanced security features:
+
+- **App-Restricted URLs**: Contains security parameters that prevent browser access
+- **Shortened Expiration**: 30 min for view, 15 min for stream, 1 hour for download
+- **Token-Based Validation**: Encrypted tokens with user/resource context
+- **Replay Attack Protection**: Unique nonce and timestamp in each request
+
+### Access Types
+
+```typescript
+// View access (30 minutes) - for documents and images
+const viewResponse = await accessClient.getContentAccess(
+  'document-123',
+  ContentAccessType.VIEW
+);
+
+// Stream access (15 minutes) - for video content
+const streamResponse = await accessClient.getContentAccess(
+  'video-456',
+  ContentAccessType.STREAM
+);
+
+// Download access (1 hour) - for offline storage
+const downloadResponse = await accessClient.getContentAccess(
+  'worksheet-789',
+  ContentAccessType.DOWNLOAD
+);
+```
+
+### Security Validation
+
+Always validate security parameters before using content URLs:
+
+```typescript
+const validation = accessClient.validateSecurityParams(
+  contentUrl,
+  expectedResourceId,
+  expectedUserId
+);
+
+if (!validation.isValid) {
+  console.error('Security validation failed:', validation.reason);
+  return;
+}
+
+// Check if URL has expired
+if (accessClient.isUrlExpired(contentUrl)) {
+  // Request new URL
+  const newResponse = await accessClient.getContentAccess(resourceId, accessType);
+}
+
+// Get time remaining until expiration
+const secondsRemaining = accessClient.getTimeUntilExpiration(contentUrl);
+console.log(`URL expires in ${secondsRemaining} seconds`);
+```
+
+### Content Metadata
+
+Each content access response includes comprehensive metadata:
+
+```typescript
+const response = await accessClient.getContentAccess('resource-123', ContentAccessType.VIEW);
+
+if (response.success) {
+  const { contentMetadata, viewingOptions, cacheHeaders } = response.data;
+  
+  console.log('File type:', contentMetadata.fileType);
+  console.log('File size:', contentMetadata.fileSize);
+  console.log('Supports offline:', viewingOptions.supportsOffline);
+  console.log('Security level:', viewingOptions.securityLevel);
+  console.log('Cache control:', cacheHeaders['Cache-Control']);
+}
 ```
 
 ## Upload Workflow
@@ -31,7 +156,7 @@ const client = new UploadClient({
 
 ```typescript
 // 1. Generate presigned URL
-const presigned = await client.generatePresignedUrl({
+const presigned = await uploadClient.generatePresignedUrl({
   filename: 'document.pdf',
   contentType: 'application/pdf'
 });
@@ -44,7 +169,7 @@ const response = await fetch(presigned.url, {
 });
 
 // 3. Finalize upload and create resource
-const resource = await client.finalizeUpload({
+const resource = await uploadClient.finalizeUpload({
   type: 'standalone',
   title: 'Mathematics Worksheet',
   subject: 'Mathematics',
@@ -61,7 +186,7 @@ const resource = await client.finalizeUpload({
 
 ```typescript
 // Complete upload in one call
-const resource = await client.completeUpload(
+const resource = await uploadClient.completeUpload(
   fileBuffer,
   'document.pdf',
   'application/pdf',
@@ -84,14 +209,14 @@ const resource = await client.completeUpload(
 ### Get Resource
 
 ```typescript
-const resource = await client.getResource('resource-123');
+const resource = await uploadClient.getResource('resource-123');
 console.log(resource.title, resource.downloads);
 ```
 
 ### Update Resource
 
 ```typescript
-const updated = await client.updateResource('resource-123', {
+const updated = await uploadClient.updateResource('resource-123', {
   title: 'Updated Title',
   tags: ['new-tag'],
   visibility: 'private'
@@ -101,7 +226,7 @@ const updated = await client.updateResource('resource-123', {
 ### Delete Resource
 
 ```typescript
-const result = await client.deleteResource('resource-123');
+const result = await uploadClient.deleteResource('resource-123');
 console.log(result.message);
 ```
 
@@ -111,10 +236,10 @@ console.log(result.message);
 
 ```typescript
 // List all resources
-const resources = await client.listResources();
+const resources = await uploadClient.listResources();
 
 // List with filters
-const filtered = await client.listResources({
+const filtered = await uploadClient.listResources({
   teacherId: 'teacher-123',
   subject: 'Mathematics',
   type: 'standalone',
@@ -126,7 +251,7 @@ const filtered = await client.listResources({
 // Pagination
 let cursor = undefined;
 do {
-  const page = await client.listResources({
+  const page = await uploadClient.listResources({
     cursor,
     limit: 20
   });
@@ -139,7 +264,7 @@ do {
 ### Search Resources
 
 ```typescript
-const results = await client.searchResources({
+const results = await uploadClient.searchResources({
   q: 'algebra equations',
   subject: 'Mathematics',
   grade: 'Grade 9',
@@ -158,13 +283,13 @@ The enhanced resource structure API provides comprehensive resource information 
 
 ```typescript
 // Get basic resource structure (mobile-optimized)
-const resource = await client.getResourceStructure('course-123');
+const resource = await uploadClient.getResourceStructure('course-123');
 
 // Get desktop-optimized structure
-const resource = await client.getResourceStructure('course-123', 'desktop');
+const resource = await uploadClient.getResourceStructure('course-123', 'desktop');
 
 // Get custom expansions
-const resource = await client.getResourceStructure('course-123', 'children.full,siblings,navigation');
+const resource = await uploadClient.getResourceStructure('course-123', 'children.full,siblings,navigation');
 
 console.log(`Resource: ${resource.data.resource.title}`);
 console.log(`Type: ${resource.data.type}`);
@@ -183,7 +308,7 @@ if (resource.data.context?.children) {
 ### Bulk Upload
 
 ```typescript
-const result = await client.bulkFinalizeUpload({
+const result = await uploadClient.bulkFinalizeUpload({
   resources: [
     {
       type: 'material',
@@ -227,11 +352,20 @@ The client automatically detects the environment from:
 ### Custom Configuration
 
 ```typescript
-const client = new UploadClient({
+// Upload Client
+const uploadClient = new UploadClient({
   environment: Environment.PRODUCTION,
   useInternalApi: true,  // Use internal API endpoints
   timeout: 30000,        // 30 second timeout
   retries: 3,            // Retry failed requests 3 times
+  accessToken: 'jwt-token'
+});
+
+// Access Client
+const accessClient = new AccessClient({
+  environment: Environment.PRODUCTION,
+  timeout: 60000,        // 60 second timeout for large files
+  retries: 2,            // Fewer retries for time-sensitive operations
   accessToken: 'jwt-token'
 });
 ```
@@ -240,10 +374,12 @@ const client = new UploadClient({
 
 ```typescript
 // Set token after creation
-client.setAccessToken('new-jwt-token');
+uploadClient.setAccessToken('new-jwt-token');
+accessClient.setAccessToken('new-jwt-token');
 
 // Clear token
-client.clearAccessToken();
+uploadClient.clearAccessToken();
+accessClient.clearAccessToken();
 ```
 
 ## Error Handling
@@ -252,7 +388,7 @@ client.clearAccessToken();
 import { ClientError, NetworkError, TimeoutError } from '@tutenet/client-core';
 
 try {
-  const resource = await client.getResource('invalid-id');
+  const resource = await uploadClient.getResource('invalid-id');
 } catch (error) {
   if (error instanceof ClientError) {
     console.error(`API Error: ${error.message} (${error.code})`);
@@ -265,6 +401,29 @@ try {
     console.error('Request timed out');
   }
 }
+
+// Content access specific error handling
+try {
+  const response = await accessClient.getContentAccess('resource-123', ContentAccessType.VIEW);
+  
+  if (!response.success) {
+    switch (response.error.code) {
+      case 'NOT_FOUND':
+        console.error('Resource not found or access denied');
+        break;
+      case 'FORBIDDEN':
+        console.error('Insufficient permissions');
+        break;
+      case 'RATE_LIMIT_EXCEEDED':
+        console.error('Too many requests. Please try again later.');
+        break;
+      default:
+        console.error('Content access failed:', response.error.message);
+    }
+  }
+} catch (error) {
+  console.error('Network error during content access:', error);
+}
 ```
 
 ## TypeScript Support
@@ -274,11 +433,14 @@ Full TypeScript support with comprehensive type definitions:
 ```typescript
 import {
   UploadClient,
+  AccessClient,
   ResourceResponse,
   CreateResourceRequest,
   ResourceType,
   ResourceVisibility,
-  MaterialType
+  MaterialType,
+  ContentAccessType,
+  ResourceContentAccessResponse
 } from '@tutenet/upload-client';
 
 // All types are exported and fully typed
@@ -288,11 +450,14 @@ const request: CreateResourceRequest = {
   visibility: 'public' as ResourceVisibility,
   // ... other fields with full type checking
 };
+
+// Content access types
+const accessType: ContentAccessType = ContentAccessType.VIEW;
 ```
 
 ## API Reference
 
-### Client Methods
+### UploadClient Methods
 
 - `generatePresignedUrl(request)` - Generate S3 presigned URL
 - `finalizeUpload(request)` - Create resource after S3 upload
@@ -306,6 +471,13 @@ const request: CreateResourceRequest = {
 - `uploadFile(file, filename, contentType, onProgress?)` - Upload file to S3
 - `completeUpload(file, filename, contentType, resourceData, onProgress?)` - Complete upload workflow
 
+### AccessClient Methods ⭐ NEW
+
+- `getContentAccess(resourceId, accessType)` - Get secure content access URL
+- `validateSecurityParams(url, resourceId, userId)` - Validate URL security parameters
+- `isUrlExpired(url)` - Check if content URL has expired
+- `getTimeUntilExpiration(url)` - Get seconds remaining until URL expires
+
 ### Utility Methods
 
 - `setAccessToken(token)` - Set authentication token
@@ -313,6 +485,108 @@ const request: CreateResourceRequest = {
 - `healthCheck()` - Check service health
 - `getConfig()` - Get client configuration
 - `getBaseUrl()` - Get API base URL
+
+## Security Best Practices
+
+### Mobile App Integration
+
+1. **Always Validate Security Parameters**
+   ```typescript
+   const validation = accessClient.validateSecurityParams(url, resourceId, userId);
+   if (!validation.isValid) {
+     throw new Error(`Security validation failed: ${validation.reason}`);
+   }
+   ```
+
+2. **Implement Certificate Pinning**
+   ```typescript
+   // Pin TuteNet API certificates in your mobile app
+   const pinnedCertificates = [
+     'sha256/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=',
+     'sha256/BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB='
+   ];
+   ```
+
+3. **Use Secure Storage**
+   ```typescript
+   // Store tokens securely
+   await SecureStorage.setItem('access_token', token);
+   ```
+
+4. **Handle URL Expiration**
+   ```typescript
+   if (accessClient.isUrlExpired(contentUrl)) {
+     const newResponse = await accessClient.getContentAccess(resourceId, accessType);
+     contentUrl = newResponse.data.contentUrl;
+   }
+   ```
+
+## Performance Optimization
+
+### Preload Content URLs
+
+```typescript
+// Preload URLs for better UX
+const preloadPromises = resources.map(resource => 
+  accessClient.getContentAccess(resource.id, ContentAccessType.VIEW)
+);
+
+const responses = await Promise.allSettled(preloadPromises);
+```
+
+### Implement Caching
+
+```typescript
+// Use cache headers for optimal performance
+const { cacheHeaders } = response.data;
+const maxAge = extractMaxAge(cacheHeaders['Cache-Control']);
+cacheContent(contentUrl, maxAge);
+```
+
+## Migration Guide
+
+### From Direct S3 URLs
+
+If you're currently using direct S3 URLs:
+
+```typescript
+// OLD: Direct S3 URL (insecure)
+const directUrl = 'https://bucket.s3.amazonaws.com/file.pdf';
+
+// NEW: Secure content access
+const response = await accessClient.getContentAccess(resourceId, ContentAccessType.VIEW);
+const secureUrl = response.data.contentUrl;
+```
+
+## API Documentation
+
+For complete API documentation, see:
+- **[OpenAPI Specification](../../TuteNetCDK/docs/api/v1/openapi.yaml)** - Complete API specification
+- **[Interactive Swagger UI](../../TuteNetCDK/docs/api/v1/swagger-ui.html)** - Interactive documentation with testing capabilities
+- **[Content Access Guide](../../TuteNetCDK/docs/api/v1/guides/CONTENT_ACCESS_GUIDE.md)** - Comprehensive guide for secure content access
+
+### Testing the Documentation
+
+To test the Swagger UI locally:
+
+```bash
+# Navigate to the API docs directory
+cd TuteNetCDK/docs/api/v1
+
+# Start a local server
+python3 -m http.server 8080
+
+# Open in browser
+open http://localhost:8080/swagger-ui.html
+```
+
+The documentation includes:
+- ✅ Complete OpenAPI 3.0 specification
+- ✅ Interactive Swagger UI with testing capabilities
+- ✅ Comprehensive examples and guides
+- ✅ All path references properly resolved
+- ✅ Security documentation for app-only access
+- ✅ Client integration examples
 
 ## License
 
