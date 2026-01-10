@@ -448,8 +448,11 @@ export interface PresignedUrlResponse {
   expiresIn: number;
 }
 
-/** Resource response model (API-safe, excludes internal backend fields) */
-export interface ResourceResponse {
+/** 
+ * Base resource summary model (API-safe, excludes internal backend fields)
+ * Used by List, Search, Update, and Get APIs for backward compatibility
+ */
+export interface ResourceSummary {
   id: string;
   type: ResourceType;
   parentId?: string;
@@ -494,49 +497,12 @@ export interface ResourceResponse {
 }
 
 /** 
- * Resource details model for structure API (excludes analytics and teacher fields)
- * Used specifically by the enhanced resource structure API to avoid duplication
- * with dedicated analytics and teacher objects.
+ * Extended resource details model for structure API
+ * 
+ * Extends ResourceSummary and adds educational metadata and teaching guides
+ * for enhanced structure API functionality.
  */
-export interface ResourceDetails {
-  id: string;
-  type: ResourceType;
-  parentId?: string;
-  rootId?: string;
-  orderIndex?: number;
-  title: string;
-  description?: string;
-  subject: Subject;
-  grades: string[];
-  tags: string[];
-  language: Language;
-  visibility: ResourceVisibility;
-  fileName?: string;
-  fileType?: FileType;
-  size?: number;
-  materialType?: MaterialType;
-  userId: string;                       // Keep for ownership reference
-  // ❌ EXCLUDED: teacherName, teacherSchool (now in dedicated teacher object)
-  // ❌ EXCLUDED: downloads, upvotesCount, rating, comments, upvotedByMe (now in dedicated analytics object)
-  childCount?: number;
-  totalSize?: number;
-  createdAt: string;
-  updatedAt: string;
-  publishedAt?: string;
-  status: ResourceStatus;
-  allowOffline: boolean;
-  watermarkEnabled: boolean;
-  topic?: string;
-  license?: LicenseType;
-  sourceType?: SourceType;
-  licenseDetails?: string;
-  thumbnailUrl?: string;
-  previewUrl?: string;          // Presigned S3 URL for file preview (materials and standalone only, 15-min expiry)
-  videoDuration?: number;
-  videoResolution?: VideoResolution;
-  videoCodec?: VideoCodec;
-  transcodedUrl?: string;
-  
+export interface ResourceDetails extends ResourceSummary {
   // Educational metadata (Task 2.2) - using EducationalMetadata interface
   educational?: EducationalMetadata;
   
@@ -562,7 +528,7 @@ export interface BulkCreateResourceResponse {
 
 /** List resources response */
 export interface ListResourcesResponse {
-  items: ResourceResponse[];
+  items: ResourceSummary[];
   nextCursor?: string;
   hasMore: boolean;
   totalCount?: number;
@@ -570,7 +536,7 @@ export interface ListResourcesResponse {
 
 /** Search resources response */
 export interface SearchResourcesResponse {
-  items: ResourceResponse[];
+  items: ResourceSummary[];
   nextCursor?: string;
   hasMore: boolean;
   totalCount?: number;
@@ -615,18 +581,18 @@ export type CreateResourceApiResponse = SuccessResponse<CreateResourceResponse> 
 export type BulkCreateResourceApiResponse = SuccessResponse<BulkCreateResourceResponse> | ErrorResponse;
 
 /** Get resource API response */
-export type ResourceApiResponse = SuccessResponse<ResourceResponse> | ErrorResponse;
+export type ResourceApiResponse = SuccessResponse<ResourceSummary> | ErrorResponse;
 
 /** Update resource API response */
-export type UpdateResourceApiResponse = SuccessResponse<ResourceResponse> | ErrorResponse;
+export type UpdateResourceApiResponse = SuccessResponse<ResourceSummary> | ErrorResponse;
 
 /** List resources API response */
-export type ListResourcesApiResponse = PaginatedResponse<ResourceResponse> | ErrorResponse;
+export type ListResourcesApiResponse = PaginatedResponse<ResourceSummary> | ErrorResponse;
 
 /** Search resources API response */
-export type SearchResourcesApiResponse = (PaginatedResponse<ResourceResponse> & {
+export type SearchResourcesApiResponse = (PaginatedResponse<ResourceSummary> & {
   data: {
-    items: ResourceResponse[];
+    items: ResourceSummary[];
     nextCursor?: string;
     previousCursor?: string;
     hasNext: boolean;
