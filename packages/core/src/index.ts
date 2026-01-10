@@ -39,6 +39,43 @@ export type {
   ErrorResponse
 } from './types/apiTypes';
 
+// Educational types
+export type {
+  EducationalMetadata,
+  LicenseInfo
+} from './types/educationalTypes';
+export {
+  DifficultyLevel,
+  SubjectType,
+  ResourceType,
+  MaterialType,
+  LicenseType
+} from './types/educationalTypes';
+export type { GradeType, LanguageCode } from './types/educationalTypes';
+
+// Teaching types
+export type {
+  TeachingGuides,
+  UsageInstructions,
+  InstructionalStep,
+  CommonChallenges,
+  Misconception,
+  QuickAssessment
+} from './types/teachingTypes';
+export {
+  QuickAssessmentType,
+  FormativeAssessmentType,
+  SummativeAssessmentType,
+  SelfAssessmentType,
+  AssessmentTiming,
+  PedagogicalApproach,
+  StudentGroup,
+  ManagementCategory,
+  PreparationCategory,
+  DeliveryTiming,
+  FollowUpType
+} from './types/teachingTypes';
+
 // Utilities
 export { retry, exponentialBackoff } from './utils/retry';
 export { validateEmail, validateRequired } from './utils/validation';

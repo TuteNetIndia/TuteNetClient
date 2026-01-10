@@ -11,11 +11,32 @@ import {
   PaginatedResponse,
   SuccessResponse,
   MessageResponse,
-  ErrorResponse
+  ErrorResponse,
+  EducationalMetadata,
+  TeachingGuides,
+  UsageInstructions,
+  InstructionalStep,
+  CommonChallenges,
+  Misconception,
+  QuickAssessment,
+  QuickAssessmentType
 } from '@tutenet/client-core';
 
 // Re-export common types for convenience
-export { PaginatedResponse, SuccessResponse, MessageResponse, ErrorResponse };
+export { 
+  PaginatedResponse, 
+  SuccessResponse, 
+  MessageResponse, 
+  ErrorResponse, 
+  EducationalMetadata,
+  TeachingGuides,
+  UsageInstructions,
+  InstructionalStep,
+  CommonChallenges,
+  Misconception,
+  QuickAssessment,
+  QuickAssessmentType
+};
 
 // =============================================================================
 // ENUMS AND TYPES
@@ -343,6 +364,35 @@ export interface ResourceAnalytics {
   
   // Optional metrics (only when available and tracked)
   viewsCount?: number;           // Total view count (>= 0, undefined if not tracked)
+  
+  // Additional analytics fields for Task 4.1 (Analytics Format Alignment)
+  totalRatings?: number;         // Total number of ratings (>= 0)
+  lastViewedAt?: string;         // ISO 8601 timestamp of last view by current user
+  lastDownloadedAt?: string;     // ISO 8601 timestamp of last download by current user
+}
+
+/** Enhanced teacher object with all required fields for proper nested structure */
+export interface EnhancedTeacher {
+  // Core identification
+  id: string;                    // Teacher/user ID
+  name: string;                  // Display name
+  school: string;                // School name
+  
+  // Enhanced fields (Task 3.1 - Teacher Data Aggregation)
+  city?: string;                 // Teacher's city (optional)
+  primarySubject: string;        // Primary teaching subject
+  
+  // Performance metrics (Task 3.1)
+  resourceCount: number;         // Total resources created by teacher
+  totalDownloads: number;        // Total downloads across all teacher's resources
+  appreciations: number;         // Total appreciations/likes received
+  
+  // Status and recognition (Task 3.1)
+  isMentor: boolean;             // Whether teacher is a mentor
+  isVerified: boolean;           // Whether teacher is verified
+  
+  // Media (optional)
+  avatarUrl?: string;            // Profile picture URL
 }
 
 /** Navigation context for hierarchical resources */
@@ -367,14 +417,14 @@ export interface NavigationContext {
 /** Resource context with hierarchical relationships */
 export interface ResourceContext {
   // Hierarchical relationships (based on expand parameters)
-  course?: ResourceResponse;     // Root course (for chapters and materials)
-  chapter?: ResourceResponse;    // Parent chapter (for materials only)
-  parent?: ResourceResponse;     // Direct parent (chapter for material, course for chapter)
-  children?: ResourceResponse[]; // Direct children (chapters for course, materials for chapter)
-  siblings?: ResourceResponse[]; // Resources at same level (same parent)
-  ancestors?: ResourceResponse[];// Complete parent chain (material -> chapter -> course)
-  descendants?: ResourceResponse[];// All nested children (course -> chapters -> materials)
-  related?: ResourceResponse[];  // Algorithmically related resources (max 10)
+  course?: ResourceDetails;      // Root course (for chapters and materials)
+  chapter?: ResourceDetails;     // Parent chapter (for materials only)
+  parent?: ResourceDetails;      // Direct parent (chapter for material, course for chapter)
+  children?: ResourceDetails[];  // Direct children (chapters for course, materials for chapter)
+  siblings?: ResourceDetails[];  // Resources at same level (same parent)
+  ancestors?: ResourceDetails[]; // Complete parent chain (material -> chapter -> course)
+  descendants?: ResourceDetails[];// All nested children (course -> chapters -> materials)
+  related?: ResourceDetails[];   // Algorithmically related resources (max 10)
   
   // Navigation context (for hierarchical resources)
   navigation?: NavigationContext;
@@ -382,7 +432,7 @@ export interface ResourceContext {
 
 /** Enhanced course structure for course resources */
 export interface EnhancedCourseStructure {
-  chapters: ResourceResponse[];            // All chapters in order (with materials as children)
+  chapters: ResourceDetails[];             // All chapters in order (with materials as children)
   totalMaterials: number;                  // Total count of materials across all chapters
   estimatedDuration?: number;              // Total estimated duration in minutes
 }
@@ -443,6 +493,57 @@ export interface ResourceResponse {
   transcodedUrl?: string;
 }
 
+/** 
+ * Resource details model for structure API (excludes analytics and teacher fields)
+ * Used specifically by the enhanced resource structure API to avoid duplication
+ * with dedicated analytics and teacher objects.
+ */
+export interface ResourceDetails {
+  id: string;
+  type: ResourceType;
+  parentId?: string;
+  rootId?: string;
+  orderIndex?: number;
+  title: string;
+  description?: string;
+  subject: Subject;
+  grades: string[];
+  tags: string[];
+  language: Language;
+  visibility: ResourceVisibility;
+  fileName?: string;
+  fileType?: FileType;
+  size?: number;
+  materialType?: MaterialType;
+  userId: string;                       // Keep for ownership reference
+  // ❌ EXCLUDED: teacherName, teacherSchool (now in dedicated teacher object)
+  // ❌ EXCLUDED: downloads, upvotesCount, rating, comments, upvotedByMe (now in dedicated analytics object)
+  childCount?: number;
+  totalSize?: number;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt?: string;
+  status: ResourceStatus;
+  allowOffline: boolean;
+  watermarkEnabled: boolean;
+  topic?: string;
+  license?: LicenseType;
+  sourceType?: SourceType;
+  licenseDetails?: string;
+  thumbnailUrl?: string;
+  previewUrl?: string;          // Presigned S3 URL for file preview (materials and standalone only, 15-min expiry)
+  videoDuration?: number;
+  videoResolution?: VideoResolution;
+  videoCodec?: VideoCodec;
+  transcodedUrl?: string;
+  
+  // Educational metadata (Task 2.2) - using EducationalMetadata interface
+  educational?: EducationalMetadata;
+  
+  // TeachingGuides MVP structure (Task 2.1)
+  teachingGuides?: TeachingGuides;   // Optional teaching guidance
+}
+
 /** Create resource response */
 export interface CreateResourceResponse {
   resourceId: string;
@@ -484,8 +585,11 @@ export interface DeleteResourceResponse {
 /** Enhanced resource structure response data */
 export interface EnhancedResourceStructureResponse {
   type: StructureResponseType;           // Discriminator for response structure
-  resource: ResourceResponse;            // Primary resource (always present)
+  resource: ResourceDetails;             // Primary resource (excludes analytics/teacher fields)
   analytics: ResourceAnalytics;          // Analytics data (always present)
+  
+  // Enhanced teacher object (Task 3.1 - will be populated with enhanced data)
+  teacher?: EnhancedTeacher;             // Enhanced teacher information
   
   // Type-specific context (mutually exclusive)
   context?: ResourceContext;             // For chapter_context, material_context
@@ -493,7 +597,7 @@ export interface EnhancedResourceStructureResponse {
   
   // Expanded data (when expand parameters used)
   expandedContext?: {
-    [key: string]: ResourceResponse[] | ResourceResponse | any;  // Dynamic based on expand params
+    [key: string]: ResourceDetails[] | ResourceDetails | any;  // Dynamic based on expand params
   };
 }
 
