@@ -287,7 +287,7 @@ export interface UpdateResourceRequest {
  * ```typescript
  * const params: ListResourcesParams = {
  *   grades: "K,1,2,3", // Comma-separated grades
- *   subject: Subject.MATHEMATICS,
+ *   subject: "Mathematics,Physics", // Comma-separated subjects
  *   limit: 20
  * };
  * ```
@@ -295,7 +295,7 @@ export interface UpdateResourceRequest {
 export interface ListResourcesParams {
   type?: ResourceType;
   userId?: string;
-  subject?: Subject;
+  subject?: string; // Comma-separated string: "Mathematics,Physics,Chemistry"
   grades?: string; // Comma-separated string: "K,1,2,3"
   language?: Language;
   status?: ResourceStatus;
