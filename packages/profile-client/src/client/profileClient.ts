@@ -2,7 +2,7 @@
  * Profile Service Client
  * 
  * Official client for communicating with TuteNet Profile Service.
- * Supports both external (public) and internal API gateways.
+ * Supports both external (public) and direct Lambda invocation modes.
  */
 
 import { 

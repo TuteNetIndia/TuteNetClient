@@ -16,7 +16,7 @@ export enum Environment {
  */
 export enum ApiType {
   EXTERNAL = 'external', // Public API Gateway
-  INTERNAL = 'internal', // Internal API Gateway
+  INTERNAL = 'internal', // Direct Lambda invocation for service-to-service calls
 }
 
 /**
@@ -56,7 +56,7 @@ export const ENDPOINTS = {
   },
   [Environment.STAGING]: {
     // Actual deployed API Gateway endpoints for staging
-    [ApiType.EXTERNAL]: 'https://xmb9bqb20b.execute-api.ap-south-1.amazonaws.com/staging/v1',
+    [ApiType.EXTERNAL]: 'https://8eyyaxe9cc.execute-api.ap-south-1.amazonaws.com/staging/v1',
     [ApiType.INTERNAL]: 'https://nenm54vjg3.execute-api.ap-south-1.amazonaws.com/staging',
   },
   [Environment.PRODUCTION]: {

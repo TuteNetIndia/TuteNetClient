@@ -2,15 +2,18 @@
  * TuteNet Profile Client
  * 
  * Official TypeScript client for TuteNet Profile Service.
- * Supports both external (public) and internal API gateways.
+ * Supports both external (public) and direct Lambda invocation modes.
  */
 
-// Client class and factory functions
+// Client interface, class and factory functions
+export type { IProfileClient } from './client/IProfileClient';
 export { ProfileClient } from './client/profileClient';
+export { LambdaProfileClient } from './client/lambdaProfileClient';
 export { 
   createProfileClient, 
   createExternalProfileClient, 
-  createInternalProfileClient 
+  createInternalProfileClient,
+  createProfileClientFromEnv
 } from './client/factory';
 
 // Types and interfaces

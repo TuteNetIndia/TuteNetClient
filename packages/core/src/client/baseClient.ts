@@ -42,6 +42,9 @@ export interface RequestConfig extends AxiosRequestConfig {
   /** Custom timeout for this request */
   timeout?: number;
   
+  /** Request ID for tracing (shorthand for metadata.requestId) */
+  requestId?: string;
+  
   /** Request metadata */
   metadata?: RequestMetadata;
 }

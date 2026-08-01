@@ -20,7 +20,9 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@tutenet/client-core": "file:../core"
+    "@tutenet/client-core": "file:../core",
+    "@aws-sdk/client-lambda": "^3.600.0",
+    "@tutenet/shared": "file:../../../TuteNetCDK/services/shared"
   },
   "devDependencies": {
     "@types/jest": "^29.5.8",
