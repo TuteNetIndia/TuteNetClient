@@ -2,7 +2,7 @@
  * Auth Service Client
  * 
  * Provides methods to interact with the TuteNet Auth Service API.
- * Supports both internal and external API endpoints with automatic environment detection.
+ * Supports external API endpoints with automatic environment detection.
  */
 
 import { 
@@ -41,9 +41,6 @@ export interface AuthClientConfig {
   /** Environment to use (auto-detected if not provided) */
   environment?: Environment;
   
-  /** Use internal API endpoints */
-  useInternalApi?: boolean;
-  
   /** Custom base URL (overrides environment detection) */
   baseUrl?: string;
   
@@ -63,7 +60,7 @@ export interface AuthClientConfig {
 export class AuthClient extends BaseClient {
   constructor(config: AuthClientConfig = {}) {
     const environment = config.environment || detectEnvironment();
-    const apiType = config.useInternalApi ? ApiType.INTERNAL : ApiType.EXTERNAL;
+    const apiType = ApiType.EXTERNAL;
     
     const clientConfig: ClientConfig = {
       environment,

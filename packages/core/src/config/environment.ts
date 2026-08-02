@@ -12,11 +12,10 @@ export enum Environment {
 }
 
 /**
- * API types (external vs internal)
+ * API types
  */
 export enum ApiType {
   EXTERNAL = 'external', // Public API Gateway
-  INTERNAL = 'internal', // Direct Lambda invocation for service-to-service calls
 }
 
 /**
@@ -26,7 +25,7 @@ export interface ClientConfig {
   /** Target environment */
   environment: Environment;
   
-  /** API type (external or internal) */
+  /** API type */
   apiType: ApiType;
   
   /** Request timeout in milliseconds */
@@ -52,16 +51,13 @@ export interface ClientConfig {
 export const ENDPOINTS = {
   [Environment.DEVELOPMENT]: {
     [ApiType.EXTERNAL]: 'https://dev-api.tutenet.com/v1',
-    [ApiType.INTERNAL]: 'https://dev-internal-api.tutenet.com',
   },
   [Environment.STAGING]: {
     // Actual deployed API Gateway endpoints for staging
     [ApiType.EXTERNAL]: 'https://8eyyaxe9cc.execute-api.ap-south-1.amazonaws.com/staging/v1',
-    [ApiType.INTERNAL]: 'https://nenm54vjg3.execute-api.ap-south-1.amazonaws.com/staging',
   },
   [Environment.PRODUCTION]: {
     [ApiType.EXTERNAL]: 'https://api.tutenet.com/v1',
-    [ApiType.INTERNAL]: 'https://internal-api.tutenet.com',
   },
 } as const;
 

@@ -33,7 +33,6 @@ import {
 /** Upload client configuration options */
 export interface UploadClientConfig {
   environment?: Environment;
-  useInternalApi?: boolean;
   baseUrl?: string;
   timeout?: number;
   retries?: number;
@@ -48,11 +47,10 @@ export interface UploadClientConfig {
 export class UploadClient extends BaseClient {
   constructor(config: UploadClientConfig = {}) {
     const environment = config.environment || detectEnvironment();
-    const apiType = config.useInternalApi ? ApiType.INTERNAL : ApiType.EXTERNAL;
     
     const clientConfig: ClientConfig = {
       environment,
-      apiType,
+      apiType: ApiType.EXTERNAL,
       timeout: config.timeout,
       retries: config.retries,
       authToken: config.accessToken,

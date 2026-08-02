@@ -42,16 +42,6 @@ export function createExternalProfileClient(
 }
 
 /**
- * Create internal Profile Service client
- */
-export function createInternalProfileClient(
-  environment: Environment,
-  options?: Partial<ClientConfig>
-): ProfileClient {
-  return createProfileClient(environment, ApiType.INTERNAL, options);
-}
-
-/**
  * Create Profile Service client with auto-detected environment
  */
 export function createAutoProfileClient(
@@ -116,9 +106,9 @@ export function createTestProfileClient(
  * @param options.environment - Environment override (DEVELOPMENT, STAGING, PRODUCTION)
  *                             Only used in HTTP mode when PROFILE_CREATE_LAMBDA_ARN is not set
  *                             If not provided, auto-detects from NODE_ENV or ENVIRONMENT variables
- * @param options.apiType - API type override (INTERNAL or EXTERNAL)
+ * @param options.apiType - API type override (EXTERNAL)
  *                         Only used in HTTP mode when PROFILE_CREATE_LAMBDA_ARN is not set
- *                         Defaults to ApiType.INTERNAL if not provided
+ *                         Defaults to ApiType.EXTERNAL if not provided
  * @param options.debug - Enable debug logging for requests and responses
  *                       Works for both Lambda and HTTP modes
  *                       Defaults to false if not provided
@@ -250,9 +240,9 @@ export function createProfileClientFromEnv(
   }
 
   // If no Lambda ARNs exist, fall back to HTTP client
-  // Detect environment and apiType (default to ApiType.INTERNAL)
+  // Detect environment and apiType (default to ApiType.EXTERNAL)
   const environment = options?.environment || detectEnvironment();
-  const apiType = options?.apiType || ApiType.INTERNAL;
+  const apiType = options?.apiType || ApiType.EXTERNAL;
 
   const config: ClientConfig = {
     environment,

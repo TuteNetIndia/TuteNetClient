@@ -12,7 +12,6 @@ export { LambdaProfileClient } from './client/lambdaProfileClient';
 export { 
   createProfileClient, 
   createExternalProfileClient, 
-  createInternalProfileClient,
   createProfileClientFromEnv
 } from './client/factory';
 

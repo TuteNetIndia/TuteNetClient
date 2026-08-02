@@ -22,7 +22,6 @@ import {
 /** Access client configuration options */
 export interface AccessClientConfig {
   environment?: Environment;
-  useInternalApi?: boolean;
   baseUrl?: string;
   timeout?: number;
   retries?: number;
@@ -66,11 +65,10 @@ export interface AccessClientConfig {
 export class AccessClient extends BaseClient {
   constructor(config: AccessClientConfig = {}) {
     const environment = config.environment || detectEnvironment();
-    const apiType = config.useInternalApi ? ApiType.INTERNAL : ApiType.EXTERNAL;
     
     const clientConfig: ClientConfig = {
       environment,
-      apiType,
+      apiType: ApiType.EXTERNAL,
       timeout: config.timeout || 30000, // 30 second timeout for content access
       retries: config.retries || 2, // Fewer retries for time-sensitive operations
       authToken: config.accessToken,

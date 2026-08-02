@@ -228,8 +228,7 @@ export class ProfileClient extends BaseClient {
    */
   private buildUrl(path: string, params?: URLSearchParams): string {
     const clientConfig = this.getConfig();
-    const baseUrl = clientConfig.apiType === 'internal' ? '/internal' : '';
-    const fullPath = `${baseUrl}${path}`;
+    const fullPath = path;
     const finalUrl = params && params.toString() ? `${fullPath}?${params.toString()}` : fullPath;
     
     // Only log URL construction in debug mode
