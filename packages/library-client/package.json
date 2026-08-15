@@ -1,0 +1,49 @@
+{
+  "name": "@tutenet/library-client",
+  "version": "1.0.0",
+  "description": "TuteNet Library Service Client - TypeScript client for personal library management",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/**/*",
+    "README.md"
+  ],
+  "scripts": {
+    "prebuild": "npm run clean",
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "dev": "tsc --watch",
+    "test": "jest",
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix"
+  },
+  "keywords": [
+    "tutenet",
+    "library",
+    "client",
+    "typescript",
+    "api",
+    "collections",
+    "curriculum"
+  ],
+  "author": "TuteNet Team",
+  "license": "MIT",
+  "dependencies": {
+    "@tutenet/client-core": "file:../core"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  },
+  "peerDependencies": {
+    "axios": "^1.6.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tutenet/client.git",
+    "directory": "packages/library-client"
+  },
+  "publishConfig": {
+    "access": "restricted"
+  }
+}

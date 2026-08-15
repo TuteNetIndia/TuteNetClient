@@ -16,7 +16,8 @@
     "build:core": "npm run build -w @tutenet/client-core",
     "build:profile": "npm run build -w @tutenet/profile-client",
     "build:auth": "npm run build -w @tutenet/auth-client",
-    "build:upload": "npm run build -w @tutenet/upload-client"
+    "build:upload": "npm run build -w @tutenet/upload-client",
+    "build:library": "npm run build -w @tutenet/library-client"
   },
   "keywords": [
     "tutenet",

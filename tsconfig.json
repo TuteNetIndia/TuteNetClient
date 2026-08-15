@@ -24,7 +24,8 @@
       "@tutenet/client-core": ["./packages/core/src"],
       "@tutenet/profile-client": ["./packages/profile-client/src"],
       "@tutenet/auth-client": ["./packages/auth-client/src"],
-      "@tutenet/upload-client": ["./packages/upload-client/src"]
+      "@tutenet/upload-client": ["./packages/upload-client/src"],
+      "@tutenet/library-client": ["./packages/library-client/src"]
     },
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
