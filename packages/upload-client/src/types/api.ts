@@ -254,6 +254,8 @@ export interface CreateResourceRequest {
   license?: LicenseType;
   sourceType?: SourceType;
   licenseDetails?: string;
+  price?: number | null;        // Price in INR (null or omitted = free resource, integer = paid)
+  currency?: 'INR' | null;     // Currency code (set when price is non-null)
 }
 
 /** Bulk create resource request */
@@ -494,6 +496,14 @@ export interface ResourceSummary {
   videoResolution?: VideoResolution;
   videoCodec?: VideoCodec;
   transcodedUrl?: string;
+
+  // Pricing fields (monetization)
+  price: number | null;         // Price in INR (null = free resource)
+  currency: 'INR' | null;      // Currency code (set when price is non-null)
+  isPurchased: boolean;         // Whether the current user has purchased this resource
+  purchaseCount: number;        // Number of purchases
+  totalEarnings: number;        // Total earnings from purchases (visible only to creator)
+  creatorEarningsPercent: number; // Creator earnings percentage (constant: 80)
 }
 
 /** 
