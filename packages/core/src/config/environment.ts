@@ -54,7 +54,7 @@ export const ENDPOINTS = {
   },
   [Environment.STAGING]: {
     // Actual deployed API Gateway endpoints for staging
-    [ApiType.EXTERNAL]: 'https://8eyyaxe9cc.execute-api.ap-south-1.amazonaws.com/staging/v1',
+    [ApiType.EXTERNAL]: 'https://rapn9iswtg.execute-api.ap-south-1.amazonaws.com/staging/v1',
   },
   [Environment.PRODUCTION]: {
     [ApiType.EXTERNAL]: 'https://api.tutenet.com/v1',

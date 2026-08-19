@@ -1,0 +1,38 @@
+{
+  "name": "@tutenet/search-client",
+  "version": "1.0.0",
+  "description": "TuteNet Search Service Client - TypeScript client for unified search (resources + teachers)",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/**/*",
+    "README.md"
+  ],
+  "scripts": {
+    "prebuild": "npm run clean",
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "dev": "tsc --watch",
+    "test": "jest",
+    "lint": "eslint src --ext .ts"
+  },
+  "keywords": [
+    "tutenet",
+    "search",
+    "client",
+    "typescript",
+    "api"
+  ],
+  "author": "TuteNet Team",
+  "license": "MIT",
+  "dependencies": {
+    "@tutenet/client-core": "file:../core"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  },
+  "peerDependencies": {
+    "axios": "^1.6.0"
+  }
+}
