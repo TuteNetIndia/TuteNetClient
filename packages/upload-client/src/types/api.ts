@@ -501,9 +501,12 @@ export interface ResourceSummary {
   price: number | null;         // Price in INR (null = free resource)
   currency: 'INR' | null;      // Currency code (set when price is non-null)
   isPurchased: boolean;         // Whether the current user has purchased this resource
-  purchaseCount: number;        // Number of purchases
-  totalEarnings: number;        // Total earnings from purchases (visible only to creator)
-  creatorEarningsPercent: number; // Creator earnings percentage (constant: 80)
+  purchaseCount: number;        // Number of purchases (public credibility signal)
+  // NOTE: Private financial fields (totalEarnings, creatorEarningsPercent) are intentionally
+  // NOT part of this public/cross-teacher response. These endpoints are authenticated but not
+  // owner-scoped (filtered by a userId parameter), so returning per-teacher financials would
+  // leak private data across teachers. Owner-scoped earnings are served only by the
+  // owner-only contributions endpoint (GET /v1/creator/contributions).
 }
 
 /** 

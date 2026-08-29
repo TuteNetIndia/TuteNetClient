@@ -1,0 +1,48 @@
+{
+  "name": "@tutenet/contributions-client",
+  "version": "1.0.0",
+  "description": "TuteNet Contributions Service Client - content performance and earnings for the Contributions & Earnings page",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/**/*",
+    "README.md"
+  ],
+  "scripts": {
+    "prebuild": "npm run clean",
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "dev": "tsc --watch",
+    "test": "jest",
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix"
+  },
+  "keywords": [
+    "tutenet",
+    "contributions",
+    "earnings",
+    "client",
+    "typescript",
+    "api"
+  ],
+  "author": "TuteNet Team",
+  "license": "MIT",
+  "dependencies": {
+    "@tutenet/client-core": "file:../core"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  },
+  "peerDependencies": {
+    "axios": "^1.6.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tutenet/client.git",
+    "directory": "packages/contributions-client"
+  },
+  "publishConfig": {
+    "access": "restricted"
+  }
+}
