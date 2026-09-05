@@ -426,6 +426,7 @@ export interface ResourceContext {
   siblings?: ResourceDetails[];  // Resources at same level (same parent)
   ancestors?: ResourceDetails[]; // Complete parent chain (material -> chapter -> course)
   descendants?: ResourceDetails[];// All nested children (course -> chapters -> materials)
+  rootDescendants?: ResourceDetails[];// Full outline from the ROOT (opt-in `root_descendants`), for chapter/material views that render the whole collapsed bundle outline
   related?: ResourceDetails[];   // Algorithmically related resources (max 10)
   
   // Navigation context (for hierarchical resources)
