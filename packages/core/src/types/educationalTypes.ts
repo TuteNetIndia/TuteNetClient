@@ -53,8 +53,8 @@ export enum SubjectType {
  */
 export enum ResourceType {
   STANDALONE = 'standalone',
-  COURSE = 'course',
-  CHAPTER = 'chapter',
+  BUNDLE = 'bundle',
+  SECTION = 'section',
   MATERIAL = 'material'
 }
 

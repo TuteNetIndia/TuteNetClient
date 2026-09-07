@@ -42,11 +42,11 @@ export {
 // ENUMS AND TYPES
 // =============================================================================
 
-/** Resource types: standalone, course, chapter, material */
+/** Resource types: standalone, bundle, section, material */
 export enum ResourceType {
   STANDALONE = 'standalone',
-  COURSE = 'course',
-  CHAPTER = 'chapter',
+  BUNDLE = 'bundle',
+  SECTION = 'section',
   MATERIAL = 'material'
 }
 
@@ -217,8 +217,8 @@ export enum FileType {
 /** Structure response types for enhanced resource structure API */
 export enum StructureResponseType {
   STANDALONE_RESOURCE = 'standalone_resource',  // Standalone resource response
-  COURSE_STRUCTURE = 'course_structure',        // Course with hierarchy
-  CHAPTER_CONTEXT = 'chapter_context',          // Chapter with navigation
+  BUNDLE_STRUCTURE = 'bundle_structure',        // Bundle with hierarchy
+  SECTION_CONTEXT = 'section_context',          // Section with navigation
   MATERIAL_CONTEXT = 'material_context'         // Material with navigation
 }
 
@@ -256,6 +256,7 @@ export interface CreateResourceRequest {
   licenseDetails?: string;
   price?: number | null;        // Price in INR (null or omitted = free resource, integer = paid)
   currency?: 'INR' | null;     // Currency code (set when price is non-null)
+  previewable?: boolean;        // Free-preview flag (materials only): when true, an unowned viewer may preview this material for free. Omitted/false = locked.
 }
 
 /** Bulk create resource request */
@@ -419,24 +420,24 @@ export interface NavigationContext {
 /** Resource context with hierarchical relationships */
 export interface ResourceContext {
   // Hierarchical relationships (based on expand parameters)
-  course?: ResourceDetails;      // Root course (for chapters and materials)
-  chapter?: ResourceDetails;     // Parent chapter (for materials only)
-  parent?: ResourceDetails;      // Direct parent (chapter for material, course for chapter)
-  children?: ResourceDetails[];  // Direct children (chapters for course, materials for chapter)
+  bundle?: ResourceDetails;      // Root bundle (for sections and materials)
+  section?: ResourceDetails;     // Parent section (for materials only)
+  parent?: ResourceDetails;      // Direct parent (section for material, bundle for section)
+  children?: ResourceDetails[];  // Direct children (sections for bundle, materials for section)
   siblings?: ResourceDetails[];  // Resources at same level (same parent)
-  ancestors?: ResourceDetails[]; // Complete parent chain (material -> chapter -> course)
-  descendants?: ResourceDetails[];// All nested children (course -> chapters -> materials)
-  rootDescendants?: ResourceDetails[];// Full outline from the ROOT (opt-in `root_descendants`), for chapter/material views that render the whole collapsed bundle outline
+  ancestors?: ResourceDetails[]; // Complete parent chain (material -> section -> bundle)
+  descendants?: ResourceDetails[];// All nested children (bundle -> sections -> materials)
+  rootDescendants?: ResourceDetails[];// Full outline from the ROOT (opt-in `root_descendants`), for section/material views that render the whole collapsed bundle outline
   related?: ResourceDetails[];   // Algorithmically related resources (max 10)
   
   // Navigation context (for hierarchical resources)
   navigation?: NavigationContext;
 }
 
-/** Enhanced course structure for course resources */
-export interface EnhancedCourseStructure {
-  chapters: ResourceDetails[];             // All chapters in order (with materials as children)
-  totalMaterials: number;                  // Total count of materials across all chapters
+/** Enhanced bundle structure for bundle resources */
+export interface EnhancedBundleStructure {
+  sections: ResourceDetails[];             // All sections in order (with materials as children)
+  totalMaterials: number;                  // Total count of materials across all sections
   estimatedDuration?: number;              // Total estimated duration in minutes
 }
 
@@ -503,6 +504,11 @@ export interface ResourceSummary {
   currency: 'INR' | null;      // Currency code (set when price is non-null)
   isPurchased: boolean;         // Whether the current user has purchased this resource
   purchaseCount: number;        // Number of purchases (public credibility signal)
+
+  // Free-preview flag: when true, an unowned viewer may preview this material
+  // for free (the paid download is still gated). Authored in the upload flow
+  // (Phase 03); default-safe (absent/false = locked as today).
+  previewable: boolean;
   // NOTE: Private financial fields (totalEarnings, creatorEarningsPercent) are intentionally
   // NOT part of this public/cross-teacher response. These endpoints are authenticated but not
   // owner-scoped (filtered by a userId parameter), so returning per-teacher financials would
@@ -572,8 +578,8 @@ export interface EnhancedResourceStructureResponse {
   teacher?: EnhancedTeacher;             // Enhanced teacher information
   
   // Type-specific context (mutually exclusive)
-  context?: ResourceContext;             // For chapter_context, material_context
-  structure?: EnhancedCourseStructure;   // For course_structure only
+  context?: ResourceContext;             // For section_context, material_context
+  structure?: EnhancedBundleStructure;   // For bundle_structure only
   
   // Expanded data (when expand parameters used)
   expandedContext?: {
